@@ -49,7 +49,7 @@ test.
 
 For example:
 
-File numtests.rexxunit:
+File example1.rexxunit:
 ```Rexx
 TestDefaultNumericDigits:
     Call AssertEqual 9, Digits(), 'Default for NUMERIC DIGITS'
@@ -70,17 +70,17 @@ TestExpect:
 
 The REXXUNIT command syntax is styled to the system where you are running it:
 * On CMS:
- * `REXXUNIT` _fn1_[:_test1_] _fn2_[:_test2_] ... `(` [`HELP`] [`QUIET`]
-   [[`NO`]`TYPE`] [`)`]
- * All test files have the filetype `REXXUNIT`, and are located via the normal
-   CMS disk-search order.
+  * `REXXUNIT` _fn1_[:_test1_] _fn2_[:_test2_] ... `(` [`HELP`] [`QUIET`]
+    [[`NO`]`TYPE`] [`)`]
+  * All test files have the filetype `REXXUNIT`, and are located via the normal
+    CMS disk-search order.
 * On Windows:
- * `rexxunit` [`/q` | `/Q`] [`/v` | `/V`] [`/?`] _file1_[:_test1_]
-   _file2_[:_test2_] ...
- * All test filenames are relative to the current directory.
+  * `rexxunit` [`/q` | `/Q`] [`/v` | `/V`] [`/?`] _file1_[:_test1_]
+    _file2_[:_test2_] ...
+  * All test filenames are relative to the current directory.
 * Elsewhere:
- * `rexxunit` [`-h`] [`-q`] [`-v`] _file1_[:_test1_] _file2_[:_test2_] ...
- * All test filenames are relative to the current directory.
+  * `rexxunit` [`-h`] [`-q`] [`-v`] _file1_[:_test1_] _file2_[:_test2_] ...
+  * All test filenames are relative to the current directory.
 
 ## Examples
 
@@ -157,48 +157,48 @@ Elapsed time: .111000 seconds
 
 The assertions you can use are:
 
-* AssertEndsWith(expected, actual, [message]) - Return if the actual value ends
+* `AssertEndsWith(expected, actual, [message])` - Return if the actual value ends
   with the expected value, otherwise fail the test and optionally display the
   message.
-* AssertEqual(expected, actual, [message]) - Return if the actual value matches
+* `AssertEqual(expected, actual, [message])` - Return if the actual value matches
   the expected value via the rules that Rexx uses for "=", otherwise fail the
   test and optionally display the message.
-* AssertFalse(actual, [message]) - Return if the actual value is false (i.e.,
+* `AssertFalse(actual, [message])` - Return if the actual value is false (i.e.,
   0), otherwise fail the test and optionally display the message.
-* AssertIdentical(expected, actual, [message]) - Return if the actual value is
+* `AssertIdentical(expected, actual, [message])` - Return if the actual value is
   identical to the expected value, otherwise fail the test and optionally
   display the message.
-* AssertNotEqual(expected, actual, [message]) - Return if the actual value does
+* `AssertNotEqual(expected, actual, [message])` - Return if the actual value does
   not match the expected value via the rules that Rexx uses for "=", otherwise
   fail the test and optionally display the message.
-* AssertNotIdentical(expected, actual, [message]) - Return if the actual value
+* `AssertNotIdentical(expected, actual, [message])` - Return if the actual value
   is not identical to the expected value, otherwise fail the test with and
   optionally display the message.
-* AssertStartsWith(expected, actual, [message]) - Return if the actual value
+* `AssertStartsWith(expected, actual, [message])` - Return if the actual value
   starts with the expected value, otherwise fail the test and optionally
   display the message.
-* AssertTrue(actual, [message]) - Return if the actual value is true (i.e., 1),
+* `AssertTrue(actual, [message])` - Return if the actual value is true (i.e., 1),
   otherwise fail the test and optionally display the message.
 
 ## Additonal functions
 
 Additonal functions supplied by RexxUnit:
 
-* Expect(condition, [subcondition], [message]) - Expect the named condition to
+* `Expect(condition, [subcondition], [message])` - Expect the named condition to
   occur before the test returns.  Condition must be one of 'ERROR', 'FAILURE',
   'HALT', 'NOTREADY', 'NOVALUE', or 'SYNTAX', case independent. In the case of
   'ERROR', 'FAILURE', and 'SYNTAX', there may be an expected subcondition RC
   value.  If the condition does not occur, fail the test and optionally display
   the message
-* Fail([message]) - Fail the test and optionally display the message.
-* OS() - Return the type of system the test is running on.  Values are `CMS`,
-  `Linux`, and `Windows` (and perhaps more in the future).
-* RexxLevel() - Return the version of the Rexx language supported by this
+* `Fail([message])` - Fail the test and optionally display the message.
+* `RexxOS()` - Return the type of system the test is running on.  Values are
+  `CMS`, `Linux`, and `Windows` (and perhaps more in the future).
+* `RexxLevel()` - Return the version of the Rexx language supported by this
   implementation.
-* Skip([message]) - Skip the test and optionally display the message.
-* SkipIf(condition, [message]) - Skip the testif the condition is true (_i.e._,
+* `Skip([message])` - Skip the test and optionally display the message.
+* `SkipIf(condition, [message])` - Skip the testif the condition is true (_i.e._,
   1) and optionally display the message.
-* XFail([message]) - Expect the test to fail.  If it unexpectedly passes,
+* `XFail([message])` - Expect the test to fail.  If it unexpectedly passes,
   report that and optionally display the message.
 
 ## Compatibilty
@@ -223,7 +223,7 @@ expected, open an
 include as clear a description of the error as possible, and if you can, a
 `TRACE I` that points to it.
 
-The Rexx code in RexxUnit is somewhat stilted, to ensure as much compatibilty
+The Rexx code in RexxUnit is somewhat contorted, to ensure as much compatibilty
 as possible.  For example, before VM/SP Release 6, the CMS Rexx implementation
 didn't support the `FAILURE` condition.  So RexxUnit checks if the interpeter
 is new enough, and doesn't do `SIGNAL ON FAILURE` if it isn't:
@@ -239,11 +239,10 @@ bREXX is a compile-then-interpret implementation, it won't even allow the
 `INTERPRET` instruction to do `SIGNAL ON FAILURE`, hiding it from the compiler:
 
 ```Rexx
-If $RXU._RexxLevel > 3.40 then ,
-    Interpret "Signal on Failure"
+If $RXU._RexxLevel > 3.40 then Interpret "Signal on Failure"
 ```
 
-Ah, but it's worse than that.  RexxUnit really needs multiple trap handlers for
+Ah, but it's worse than that!  RexxUnit really needs multiple trap handlers for
 each condition.  Rexx, of couse, has `SIGNAL ON condition NAME handler`.
 But that wasn't introduced until Rexx level 3.46, so some implementations don't
 have it.  Thus, what RexxUnit _really_ does for `SIGNAL ON FAILURE` is this:

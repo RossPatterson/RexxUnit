@@ -850,6 +850,20 @@ Call $RXU_AssertFailed , , , , Message, Line
 
 
 /*---------------------------------------------------------------------------*/
+/* NoError(command)                                                          */
+/*                                                                           */
+/* Execute a command with SIGNAL OFF ERROR and return its return code.       */
+/*---------------------------------------------------------------------------*/
+NoError: Procedure expose $RXU. SigL
+Parse arg Command
+
+Signal off Error
+''Command
+Signal on Error
+Return RC
+
+
+/*---------------------------------------------------------------------------*/
 /* RexxLevel()                                                               */
 /*                                                                           */
 /* Return the version of the Rexx language supported by this implementation. */

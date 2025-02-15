@@ -191,13 +191,17 @@ Additonal functions supplied by RexxUnit:
   value.  If the condition does not occur, fail the test and optionally display
   the message
 * `Fail([message])` - Fail the test and optionally display the message.
+* `NoError(command)` - Execute a command with SIGNAL OFF ERROR and return its
+  return code.  This is intended for test-support commands that that use the
+  return code for some data (_e.g._, the CMS `MAKEBUF` and `SENTRIES`
+  commands).
 * `RexxOS()` - Return the type of system the test is running on.  Values are
   `CMS`, `Linux`, and `Windows` (and perhaps more in the future).
 * `RexxLevel()` - Return the version of the Rexx language supported by this
   implementation.
 * `Skip([message])` - Skip the test and optionally display the message.
-* `SkipIf(condition, [message])` - Skip the testif the condition is true (_i.e._,
-  1) and optionally display the message.
+* `SkipIf(condition, [message])` - Skip the test if the condition is true
+  (_i.e._, 1) and optionally display the message.
 * `XFail([message])` - Expect the test to fail.  If it unexpectedly passes,
   report that and optionally display the message.
 

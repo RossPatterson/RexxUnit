@@ -910,7 +910,7 @@ Return
 
 
 /*---------------------------------------------------------------------------*/
-/* DO NOT CALL OR SIGNAL ANYTHING BELOW THIS POINT.                          */
+/* Test authors: Do not call or signal anything below this point.            */
 /*---------------------------------------------------------------------------*/
 
 

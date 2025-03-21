@@ -208,7 +208,7 @@ Additonal functions supplied by RexxUnit:
 ## Compatibilty
 
 RexxUnit attempts to support any Rexx implementation that is at least Rexx
-level 3.40 - the version described in Cowlisha's _The Rexx Language, 2nd
+level 3.40 - the version described in Cowlishaw's _The Rexx Language, 2nd
 edition_ - on any platform.  In practice, it has needed to "patch around"
 implementation variations to be able to do so.
 

@@ -1,0 +1,16 @@
+/* CHANGESTR */
+Test_1: Call AssertEqual 'axyaxyaxy', changestr('bc','abcabcabc','xy'); Return
+Test_2: Call AssertEqual 'aaa', changestr('bc','abcabcabc',''); Return
+Test_3: Call AssertEqual 'abcabzabc', changestr('','abcabcabc','xy'); Return
+/* These from the Rexx book. */
+/* These from Mark Hessling. */
+Test_4: Call AssertEqual 'fred', changestr('a','fred','c'); Return
+Test_5: Call AssertEqual '', changestr('','','x'); Return
+Test_6: Call AssertEqual 'xbcdef', changestr('a','abcdef','x'); Return
+Test_7: Call AssertEqual '1', changestr('0','0','1'); Return
+Test_8: Call AssertEqual 'def', changestr('a','def','xyz'); Return
+Test_9: Call AssertEqual '', changestr('a','','x'); Return
+Test_10: Call AssertEqual 'def', changestr('','def','xyz'); Return
+Test_11: Call AssertEqual 'xyzdef', changestr('abc','abcdef','xyz'); Return
+Test_12: Call AssertEqual 'abcdef', changestr('abcdefg','abcdef','xyz'); Return
+Test_13: Call AssertEqual 'zdefzcdzd', changestr('abc','abcdefabccdabcd','z'); Return

@@ -1,0 +1,13 @@
+TestDefaultNumericDigits:
+    Call AssertEqual 9, Digits(), 'Default for NUMERIC DIGITS'
+	Return
+TestSkipper:
+	Call Skip 'for no good reason'
+	Return
+TestDefaultNumericFuzz:  Call AssertEqual 0, Fuzz(); Return
+TestFail:
+	Call Fail 'Because that''s how I roll'
+TestExpect:
+	Call Expect 'ERROR', 1
+	'asdfqwer'
+	Return

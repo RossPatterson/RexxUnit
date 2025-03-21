@@ -246,7 +246,7 @@ Return 1
 /*---------------------------------------------------------------------------*/
 /* ParseArgs(Argstring)                                                      */
 /*                                                                           */
-/* Parse the REXXUNIT argument string in the style of the current system.    */
+/* Parse the argument string in the style of the current system.             */
 /* NOTE: We allow the command to specify it's syntax style, both for ease of */
 /*       testing, and so scripts can call this command in a                  */
 /*       system-independent manner.                                          */
@@ -342,7 +342,7 @@ Return
 /*---------------------------------------------------------------------------*/
 Setup: Procedure expose G.
 
-/* Global variables that the REXXUNIT program itself will use. */
+/* Global variables that the RexxUnit program itself will use. */
 G. = ''
 G._True = (1=1)
 G._False = Not(G._True)
@@ -385,7 +385,7 @@ Select
         SourceSystem VersionSystem
 End
 Call SystemInterface 'SETUP'
-/* Get the REXXUNIT test boilerplate for later use. */
+/* Get the RexxUnit test boilerplate for later use. */
 BoilerPlateStart = FindBoilerPlate()
 Do I = 1 by 1 for SourceLine() - BoilerPlateStart
     G._Framework.I = SourceLine(BoilerPlateStart + I)
@@ -463,7 +463,7 @@ SI_WriteTestStream: Procedure expose G.
 Parse arg InFile, OutFile
 
 Call Stream OutFile, 'C', 'OPEN WRITE REPLACE'
-Call LineOut OutFile, '/* REXXUNIT Test Case file */ Signal $RXU_Start'
+Call LineOut OutFile, '/* RexxUnit Test Case file */ Signal $RXU_Start'
 Call Stream InFile, 'C', 'OPEN READ'
 $RXU_TrapNotReadyDest = 'SIWTS_EOF'
 Signal on NotReady
@@ -551,7 +551,7 @@ Select
         If OutFm = '' then OutFm = 'A'
         Call DeleteFile Arg2
         'EXECIO 1 DISKW' OutFn OutFt OutFm '( FINIS STRING',
-            '/* REXXUNIT Test Case file */ Signal $RXU_Start'
+            '/* RexxUnit Test Case file */ Signal $RXU_Start'
         'COPYFILE' InFn InFt InFm OutFn OutFt OutFm '( APPEND'
         X.0 = G._Framework.0
         Do I = 1 to X.0

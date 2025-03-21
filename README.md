@@ -54,9 +54,11 @@ File example1.rexxunit:
 TestDefaultNumericDigits:
     Call AssertEqual 9, Digits(), 'Default for NUMERIC DIGITS'
     Return
+
 TestSkipper:
     Call Skip 'for no good reason'
     Return
+
 TestDefaultNumericFuzz: Call AssertEqual 0, Fuzz(); Return
 TestFail:
     Call Fail 'Because that''s how I roll'
@@ -68,18 +70,19 @@ TestExpect:
 
 ## Command syntax
 
-The REXXUNIT command syntax is styled to the system where you are running it:
+The RexxUnit command syntax is styled to the system where you are running it:
 * On CMS:
-  * `REXXUNIT` _fn1_[:_test1_] _fn2_[:_test2_] ... `(` [`HELP`] [`QUIET`]
-    [[`NO`]`TYPE`] [`)`]
+  * `REXXUNIT` _fn1_[:_test1_] _fn2_[:_test2_] ... `(` [[`NO`]`DEBUG`] [`HELP`]
+    [`QUIET`] [[`NO`]`TYPE`] [`)`]
   * All test files have the filetype `REXXUNIT`, and are located via the normal
     CMS disk-search order.
 * On Windows:
-  * `rexxunit` [`/q` | `/Q`] [`/v` | `/V`] [`/?`] _file1_[:_test1_]
-    _file2_[:_test2_] ...
+  * `rexxunit` [`/d` | `/D`] [`/q` | `/Q`] [`/v` | `/V`] [`/?`]
+    _file1_[:_test1_] _file2_[:_test2_] ...
   * All test filenames are relative to the current directory.
 * Elsewhere:
-  * `rexxunit` [`-h`] [`-q`] [`-v`] _file1_[:_test1_] _file2_[:_test2_] ...
+  * `rexxunit` [`-d`'] [`-h`] [`-q`] [`-v`] _file1_[:_test1_]
+    _file2_[:_test2_] ...
   * All test filenames are relative to the current directory.
 
 ## Examples

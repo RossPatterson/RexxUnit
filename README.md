@@ -72,17 +72,17 @@ TestExpect:
 
 The RexxUnit command syntax is styled to the system where you are running it:
 * On CMS:
-  * `REXXUNIT` _fn1_[:_test1_] _fn2_[:_test2_] ... `(` [[`NO`]`DEBUG`] [`HELP`]
-    [`QUIET`] [[`NO`]`TYPE`] [`)`]
+  * `REXXUNIT` _fn1_[:_test1_] _fn2_[:_test2_] ... `(` [`HELP`] [`QUIET`]
+    [[`NO`]`SOFT`] [[`NO`]`TYPE`] [`)`]
   * All test files have the filetype `REXXUNIT`, and are located via the normal
     CMS disk-search order.
 * On Windows:
-  * `rexxunit` [`/d` | `/D`] [`/q` | `/Q`] [`/v` | `/V`] [`/?`]
+  * `rexxunit` [`/q` | `/Q`] [`/s` | `/S`] [`/v` | `/V`] [`/?`]
     _file1_[:_test1_] _file2_[:_test2_] ...
   * All test filenames are relative to the current directory.
 * Elsewhere:
-  * `rexxunit` [`-d`'] [`-h`] [`-q`] [`-v`] _file1_[:_test1_]
-    _file2_[:_test2_] ...
+  * `rexxunit` [`-h` | `--help`] [`-q` | `--quiet`] [`-s` | `--soft` ]
+    [`-v` | `--verbose`] _file1_[:_test1_] _file2_[:_test2_] ...
   * All test filenames are relative to the current directory.
 
 ## Examples
@@ -157,6 +157,13 @@ Elapsed time: .111000 seconds
 ```
 
 ## Assertion functions
+
+Assertion functions can fail the test in one of two ways.  The normal way,
+"hard" assertions, causes the test to fail at the first assertion failure.
+When the `soft` option is specified, the test continues to run through all
+of its assertions, and reports failure at the end, with the full set of
+assertion messages.  Such "soft" assertions can be a handy tool when developing
+or modifying a test, but should not be used for normal operation.
 
 The assertions you can use are:
 

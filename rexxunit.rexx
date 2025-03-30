@@ -1,5 +1,5 @@
 /* RexxUnit 1.0.0 */
-
+ 
 /*---------------------------------------------------------------------------*/
 /* This is free and unencumbered software released into the public domain.   */
 /*                                                                           */
@@ -26,12 +26,12 @@
 /*                                                                           */
 /* For more information, please refer to <https://unlicense.org>             */
 /*---------------------------------------------------------------------------*/
-
+ 
 Parse arg Argstring
-
+ 
 Signal on NoValue
 Signal on Syntax
-
+ 
 Call Setup
 Call ParseArgs Argstring
 TestNames = CollectTests(G._TestNamePatterns)
@@ -45,10 +45,10 @@ If Not(G._Verbose) then Call LineOut , ''
 Call DeleteFile G._TempFile
 Call Report
 Exit
-
-/* Signal traps are at the bottom, since they have to be shared with the */ 
+ 
+/* Signal traps are at the bottom, since they have to be shared with the */
 /* $RXU code. */
-
+ 
 /*---------------------------------------------------------------------------*/
 /* CacheRoutinesFromFile(Filename)                                           */
 /*                                                                           */
@@ -56,7 +56,7 @@ Exit
 /*---------------------------------------------------------------------------*/
 CacheRoutinesFromFile: Procedure expose G. TestCache.
 Parse arg Filename
-
+ 
 FilenameUpper = Translate(Filename)
 If WordPos(Translate(FilenameUpper), TestCache._Files) > 0 then Return
 G._HasSetup.FilenameUpper = G._False
@@ -73,9 +73,9 @@ Do I = 1 to SI_Results.0
                 When Not(Words(Label) = 1) then Nop
                 When Not(Left(LabelUpper, 4) = 'TEST') then Nop
                 When LabelUpper = 'TESTSETUP' then ,
-                    G._HasSetup.FilenameUpper. = G._True
+                    G._HasSetup.FilenameUpper = G._True
                 When LabelUpper = 'TESTTEARDOWN' then ,
-                    G._HasTeardown.FilenameUpper. = G._True
+                    G._HasTeardown.FilenameUpper = G._True
                 Otherwise
                     TestRoutines = TestRoutines Label
             End
@@ -86,8 +86,8 @@ TestCache._Files = TestCache._Files FilenameUpper
 TestCache.FilenameUpper = TestRoutines
 If G._Verbose then Say Filename':' Words(TestCache.FilenameUpper) 'tests'
 Return
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* CollectTests(TestNamePatterns)                                            */
 /*                                                                           */
@@ -97,7 +97,7 @@ Return
 /*---------------------------------------------------------------------------*/
 CollectTests: Procedure expose G.
 Parse arg TestNamePatterns
-
+ 
 TestCache. = ''
 TestNames = ''
 Do while  Not(TestNamePatterns = '')
@@ -138,8 +138,8 @@ Do while  Not(TestNamePatterns = '')
     End
 End
 Return TestNames
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* DeleteFile(Filename)                                                      */
 /*                                                                           */
@@ -147,12 +147,12 @@ Return TestNames
 /*---------------------------------------------------------------------------*/
 DeleteFile: Procedure expose G.
 Parse arg Filename
-
+ 
 Call SystemInterface 'DELETEFILE', Filename
-
+ 
 Return
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* ExitError(ExitRC, Message)                                                */
 /*                                                                           */
@@ -160,12 +160,12 @@ Return
 /*---------------------------------------------------------------------------*/
 ExitError:
 Parse arg ExitRC, Message
-
+ 
 Say ExitRC ':' Message
-
+ 
 Exit ExitRC
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* GetSigL()                                                                 */
 /*                                                                           */
@@ -173,8 +173,8 @@ Exit ExitRC
 /* 1.0.2 and earlier (BREXX Issue #80).                                      */
 /*---------------------------------------------------------------------------*/
 GetSigL: Return SigL
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* ListFiles(FilePattern)                                                    */
 /*                                                                           */
@@ -182,16 +182,16 @@ GetSigL: Return SigL
 /*---------------------------------------------------------------------------*/
 ListFiles: Procedure expose G.
 Parse arg FilePattern
-
+ 
 FileList = ''
 Call SystemInterface 'LISTFILES', FilePattern
 Do I = 1 to SI_Results.0
     FileList = FileList SI_Results.I
 End
-
+ 
 Return FileList
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* ListRoutines(Filename, RoutinePattern)                                    */
 /*                                                                           */
@@ -199,7 +199,7 @@ Return FileList
 /*---------------------------------------------------------------------------*/
 ListRoutines: Procedure expose G. TestCache.
 Parse arg Filename, RoutinePattern
-
+ 
 Call CacheRoutinesFromFile Filename
 FilenameUpper = Translate(Filename)
 Routines = TestCache.FilenameUpper
@@ -208,10 +208,10 @@ Do while Not(Routines = '')
     Parse var Routines Routine Routines
     If Match(Routine, RoutinePattern) then RoutineList = RoutineList Routine
 End
-
+ 
 Return RoutineList
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* Match(String, Pattern)                                                    */
 /*                                                                           */
@@ -219,7 +219,7 @@ Return RoutineList
 /*---------------------------------------------------------------------------*/
 Match: Procedure expose G.
 Parse arg String, Pattern
-
+ 
 Select
     When String == Pattern then Return G._True
     When Pos(Pattern, '*') > 0 then Do
@@ -230,19 +230,19 @@ Select
     /* There are probably other patterns to check, but we'll code them later */
     Otherwise Return G._False
 End /* notreached */
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* Not(Boolean)                                                              */
 /*                                                                           */
 /* Because some Rexx implementations have problems with not-sign operators.  */
 /*---------------------------------------------------------------------------*/
 Not: Procedure
-
+ 
 If Arg(1) then Return 0
 Return 1
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* ParseArgs(Argstring)                                                      */
 /*                                                                           */
@@ -253,7 +253,7 @@ Return 1
 /*---------------------------------------------------------------------------*/
 ParseArgs: Procedure expose G.
 Parse arg Argstring
-
+ 
 SavedSystemInterface = G._SystemInterface
 If Left(Word(Argstring, 1), 2) == '__' then Do
     Parse value Substr(Argstring, 3) with G._SystemInterface Argstring
@@ -261,10 +261,10 @@ If Left(Word(Argstring, 1), 2) == '__' then Do
 End
 Call SystemInterface 'PARSEARGS', Argstring
 G._SystemInterface = SavedSystemInterface
-
+ 
 Return
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* Report()                                                                  */
 /*                                                                           */
@@ -288,10 +288,10 @@ Say G._Count.ERROR 'errors'
 Say G._Count.SKIP 'skipped'
 Say G._Count.XFAIL 'passed when expected to fail'
 Say 'Elapsed time:' Time('E') 'seconds'
-
+ 
 Return
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* RunTest(TestName)                                                         */
 /*                                                                           */
@@ -300,7 +300,7 @@ Return
 RunTest:  Procedure expose G.
 Parse arg TestName
 Parse var TestName Filename ':' Routine
-
+ 
 FilenameUpper = Translate(Filename)
 If Not(G._CurrentTestFile = FilenameUpper) then Do
     Call SystemInterface 'WRITETESTFILE', Filename, G._TempFile
@@ -310,7 +310,7 @@ If G._Verbose then Say TestName '...'
 Interpret "TestResult = " G._TempFileName || "('" || Routine ,
     G._HasSetup.FilenameUpper G._HasTeardown.FilenameUpper G._OS G._RexxLevel ,
     G._SoftAsserts || "')"
-
+ 
 Parse var TestResult TestStatus TestMessage '15'x TestDetails
 TestStatus = Translate(TestStatus)
 If WordPos(TestStatus, 'ERROR FAIL PASS SKIP SIGNAL XFAIL') = 0 then Do
@@ -331,17 +331,17 @@ If Not(TestStatus = 'PASS') then Do
     G._BadTests.I = TestName || '15'x || TestResult
     G._BadTests.0 = I
 End
-
+ 
 Return
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* Setup()                                                                   */
 /*                                                                           */
 /* Set up to run tests, including system dependencies.                       */
 /*---------------------------------------------------------------------------*/
 Setup: Procedure expose G.
-
+ 
 /* Global variables that the RexxUnit program itself will use. */
 G. = ''
 G._True = (1=1)
@@ -362,7 +362,7 @@ G._Count.PASS   = 0
 G._Count.SIGNAL = 0
 G._Count.SKIP   = 0
 G._Count.XFAIL  = 0
-
+ 
 /* System dependent behaviors. */
 Parse source SourceSystem SourceAddress SourceFile
 Parse version VersionSystem VersionRexxLevel VersionDate
@@ -392,10 +392,10 @@ Do I = 1 by 1 for SourceLine() - BoilerPlateStart
     G._Framework.I = SourceLine(BoilerPlateStart + I)
 End
 G._Framework.0 = I - 1
-
+ 
 Return
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* ShowHelp(SystemType)                                                      */
 /*                                                                           */
@@ -403,7 +403,7 @@ Return
 /*---------------------------------------------------------------------------*/
 ShowHelp: Procedure
 SystemType = Arg(1)
-
+ 
 Select
     When SystemType = 'CMS' then ,
         Say 'REXXUNIT fn1 fn2 ... ( [HELP] [QUIET] [[NO]TYPE] [)]'
@@ -413,10 +413,10 @@ Select
         Say 'rexxunit [-h|--help] [-q|--quiet] [-v|--verbose] file1 file2 ...'
     Otherwise Call ExitError 2, 'Bad system type:' SystemType
 End
-
+ 
 Exit
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* SystemInterface(Action, Arg1, Arg2, ...)                                  */
 /*                                                                           */
@@ -425,7 +425,7 @@ Exit
 /*---------------------------------------------------------------------------*/
 SystemInterface: Procedure expose G. SI_Input. SI_Results.
 Parse arg Action, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9
-
+ 
 Select
     When WordPos(Translate(Action), ,
         'DELETEFILE LISTFILES PARSEARGS READFILE SETUP WRITETESTFILE') = 0 ,
@@ -441,12 +441,12 @@ Select
             Arg7, Arg8, Arg9
     Otherwise Call ExitError 4, 'Unknown system interface:' G._SystemInterface
 End
-
+ 
 Return
-
+ 
 SI_ReadStream: Procedure expose G. SI_Results.
 Parse arg InFile
-
+ 
 $RXU_TrapNotReadyDest = 'SIRS_EOF'
 Signal on NotReady
 Do I = 1 by 1
@@ -457,12 +457,12 @@ SI_Results.0 = I - 1
 Call Stream InFile, 'C', 'CLOSE'
 If Not(Result = 'UNKNOWN') then ,
     Call ExitError 5, 'Error' Result 'closing' InFile
-
+ 
 Return
-
+ 
 SI_WriteTestStream: Procedure expose G.
 Parse arg InFile, OutFile
-
+ 
 Call Stream OutFile, 'C', 'OPEN WRITE REPLACE'
 Call LineOut OutFile, '/* RexxUnit Test Case file */ Signal $RXU_Start'
 Call Stream InFile, 'C', 'OPEN READ'
@@ -477,10 +477,10 @@ Do I = 1 to G._Framework.0
     Call LineOut OutFile, G._Framework.I
 End
 Call Stream OutFile, 'C', 'CLOSE'
-
+ 
 Return
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* SyI_CMS(Action, Arg1, Arg2, ...)                                          */
 /*                                                                           */
@@ -489,7 +489,7 @@ Return
 /*---------------------------------------------------------------------------*/
 SyI_CMS: Procedure expose G. SI_Input. SI_Results.
 Parse arg Action, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9
-
+ 
 Select
     When Action = 'DELETEFILE' then Do
         Parse upper var Arg1 Fn '.' Ft '.' Fm
@@ -563,10 +563,10 @@ Select
         'EXECIO' X.0 'DISKW' OutFn OutFt OutFm '( STEM X. FINIS'
     End
 End
-
+ 
 Return
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* SyI_Unix(Action, Arg1, Arg2, ...)                                         */
 /*                                                                           */
@@ -575,7 +575,7 @@ Return
 /*---------------------------------------------------------------------------*/
 SyI_Unix: Procedure expose G. SI_Input. SI_Results.
 Parse arg Action, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9
-
+ 
 Select
     When Action = 'DELETEFILE' then Do
         If Words(Arg1) > 1 | Arg1 = '*' then Call ExitError 9, 'No.'
@@ -616,10 +616,10 @@ Select
         Call SI_WriteTestStream Arg1, Arg2
     End
 End
-
+ 
 Return
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* SyI_Windows(Action, Arg1, Arg2, ...)                                      */
 /*                                                                           */
@@ -628,7 +628,7 @@ Return
 /*---------------------------------------------------------------------------*/
 SyI_Windows: Procedure expose G. SI_Input. SI_Results.
 Parse arg Action, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9
-
+ 
 Select
     When Action = 'DELETEFILE' then Do
         If Words(Arg1) > 1 | Arg1 = '*.*' then Call ExitError 7, 'No.'
@@ -664,10 +664,10 @@ Select
         Call SI_WriteTestStream Arg1, Arg2
     End
 End
-
+ 
 Return
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* WordPos(needle, haystack, startword)                                      */
 /*                                                                           */
@@ -675,7 +675,7 @@ Return
 /*---------------------------------------------------------------------------*/
 WordPos: Procedure
 Parse arg Needle, Haystack, StartWord
-
+ 
 If StartWord = '' then StartWord = 1
 If Words(Needle) = 0 then Return 0
 Do I = StartWord by 1 while Not(Haystack = '')
@@ -686,10 +686,10 @@ Do I = StartWord by 1 while Not(Haystack = '')
     End
     Return I
 End
-
+ 
 Return 0
-
-
+ 
+ 
 /*
 ===============================================================================
 Everything below here is the "boilerplate" code that will be appended to
@@ -699,8 +699,8 @@ it, and none of its variables or labels are used above.
 */
 FindBoilerPlate: Return GetSigL()
 Call Fail 'Test script ran off end of file instead of RETURNing.'
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* AssertEndsWith(expected, actual, [message])                               */
 /*                                                                           */
@@ -709,15 +709,15 @@ Call Fail 'Test script ran off end of file instead of RETURNing.'
 /*---------------------------------------------------------------------------*/
 AssertEndsWith: Procedure expose $RXU. SigL
 Parse arg  Expected, Actual, Message
-
+ 
 If Expected == Right(Actual, Length(Expected)) then Return
 Line = SigL /* Patch for Regina bug #610 */
 Call $RXU_AssertFailed 'Expected ending', Expected, 'Actual', Actual, ,
     Message, Line
-
+ 
 Return
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* AssertEqual(expected, actual, [message])                                  */
 /*                                                                           */
@@ -726,14 +726,14 @@ Return
 /*---------------------------------------------------------------------------*/
 AssertEqual: Procedure expose $RXU. SigL
 Parse arg  Expected, Actual, Message
-
+ 
 If Expected = Actual then Return
 Line = SigL /* Patch for Regina bug #610 */
 Call $RXU_AssertFailed 'Expected', Expected, 'Actual', Actual, Message, Line
-
+ 
 Return
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* AssertFalse(actual, [message])                                            */
 /*                                                                           */
@@ -742,14 +742,14 @@ Return
 /*---------------------------------------------------------------------------*/
 AssertFalse: Procedure expose $RXU. SigL
 Parse arg  Actual, Message
-
+ 
 If $RXU_Not(Actual) then Return
 Line = SigL /* Patch for Regina bug #610 */
 Call $RXU_AssertFailed 'Expected', 0, 'Actual', Actual, Message, Line
-
+ 
 Return
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* AssertIdentical(expected, actual, [message])                              */
 /*                                                                           */
@@ -758,14 +758,14 @@ Return
 /*---------------------------------------------------------------------------*/
 AssertIdentical: Procedure expose $RXU. SigL
 Parse arg  Expected, Actual, Message
-
+ 
 If Expected == Actual then Return
 Line = SigL /* Patch for Regina bug #610 */
 Call $RXU_AssertFailed 'Expected', Expected, 'Actual', Actual, Message, Line
-
+ 
 Return
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* AssertNotEqual(expected, actual, [message])                               */
 /*                                                                           */
@@ -774,14 +774,14 @@ Return
 /*---------------------------------------------------------------------------*/
 AssertNotEqual: Procedure expose $RXU. SigL
 Parse arg  Expected, Actual, Message
-
+ 
 If $RXU_Not(Expected = Actual) then Return
 Line = SigL /* Patch for Regina bug #610 */
 Call $RXU_AssertFailed 'Expected', Expected, 'Actual', Actual, Message, Line
-
+ 
 Return
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* AssertNotIdentical(expected, actual, [message])                           */
 /*                                                                           */
@@ -790,14 +790,14 @@ Return
 /*---------------------------------------------------------------------------*/
 AssertNotIdentical: Procedure expose $RXU. SigL
 Parse arg  Expected, Actual, Message
-
+ 
 If $RXU_Not(Expected == Actual) then Return
 Line = SigL /* Patch for Regina bug #610 */
 Call $RXU_AssertFailed 'Expected', Expected, 'Actual', Actual, Message, Line
-
+ 
 Return
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* AssertStartsWith(expected, actual, [message])                             */
 /*                                                                           */
@@ -806,15 +806,15 @@ Return
 /*---------------------------------------------------------------------------*/
 AssertStartsWith: Procedure expose $RXU. SigL
 Parse arg  Expected, Actual, Message
-
+ 
 If Expected == Left(Actual, Length(Expected)) then Return
 Line = SigL /* Patch for Regina bug #610 */
 Call $RXU_AssertFailed 'Expected begining', Expected, 'Actual', Actual, ,
     Message, Line
-
+ 
 Return
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* AssertTrue(actual, [message])                                             */
 /*                                                                           */
@@ -823,14 +823,14 @@ Return
 /*---------------------------------------------------------------------------*/
 AssertTrue: Procedure expose $RXU. SigL
 Parse arg  Actual, Message
-
+ 
 If Actual then Return
 Line = SigL /* Patch for Regina bug #610 */
 Call $RXU_AssertFailed 'Expected', 1, 'Actual', Actual, Message, Line
-
+ 
 Return
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* Expect(condition, [subcondition], [message])                              */
 /*                                                                           */
@@ -841,7 +841,7 @@ Return
 /*---------------------------------------------------------------------------*/
 Expect: Procedure expose $RXU.
 Parse arg  $RXU._ExpectWhat, $RXU._ExpectHow, $RXU._ExpectMsg
-
+ 
 $RXU._ExpectWhat = Translate($RXU._ExpectWhat)
 If WordPos($RXU._ExpectWhat, ,
         'ERROR FAILURE HALT NOTREADY NOVALUE SYNTAX') = 0 then Do
@@ -854,9 +854,9 @@ If WordPos($RXU._ExpectWhat, 'ERROR FAILURE SYNTAX') = 0 & ,
         $RXU._ExpectWhat':' $RXU._ExpectHow
     Signal $RXU_TestComplete
 End
-
+ 
 Return
-
+ 
 /*---------------------------------------------------------------------------*/
 /* Fail([message])                                                           */
 /*                                                                           */
@@ -864,12 +864,12 @@ Return
 /*---------------------------------------------------------------------------*/
 Fail: Procedure expose $RXU. SigL
 Parse arg  Message
-
+ 
 Line = SigL /* Patch for Regina bug #610 */
 Call $RXU_AssertFailed , , , , Message, Line
 Return
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* NoError(command)                                                          */
 /*                                                                           */
@@ -877,34 +877,34 @@ Return
 /*---------------------------------------------------------------------------*/
 NoError: Procedure expose $RXU. SigL
 Parse arg Command
-
+ 
 Signal off Error
 ''Command
 Signal on Error
-
+ 
 Return RC
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* RexxLevel()                                                               */
 /*                                                                           */
 /* Return the version of the Rexx language supported by this implementation. */
 /*---------------------------------------------------------------------------*/
 RexxLevel: Procedure expose $RXU.
-
+ 
 Return $RXU._RexxLevel
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* RexxOS()                                                                  */
 /*                                                                           */
 /* Return the OS name of the Rexx language supported by this implementation. */
 /*---------------------------------------------------------------------------*/
 RexxOS: Procedure expose $RXU.
-
+ 
 Return $RXU._OS
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* Skip([message])                                                           */
 /*                                                                           */
@@ -912,11 +912,11 @@ Return $RXU._OS
 /*---------------------------------------------------------------------------*/
 Skip: Procedure expose $RXU.
 Parse arg Message
-
+ 
 $RXU._TestStatus = 'SKIP' Message
 Signal $RXU_TestComplete
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* SkipIf(condition, [message])                                              */
 /*                                                                           */
@@ -924,12 +924,12 @@ Signal $RXU_TestComplete
 /*---------------------------------------------------------------------------*/
 SkipIf: Procedure expose $RXU.
 Parse arg Condition, Message
-
+ 
 If $RXU_Not(Condition) then Return
 $RXU._TestStatus = 'SKIP' Message
 Signal $RXU_TestComplete
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* XFail([Message])                                                          */
 /*                                                                           */
@@ -937,19 +937,19 @@ Signal $RXU_TestComplete
 /*---------------------------------------------------------------------------*/
 XFail: Procedure expose $RXU.
 Parse arg Message
-
+ 
 If Message = '' then Message = 'Expected to fail, but passed'
 $RXU._ExpectFailure = 1
 $RXU._ExpectFailureMessage = Message
-
+ 
 Return
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* Test authors: Do not call or signal anything below this point.            */
 /*---------------------------------------------------------------------------*/
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* $RXU_AssertFailed([ExpectedText], [ExpectedValue], [ActualText            */
 /*                   [ActualValue], [Message], [Line])                       */
@@ -982,43 +982,43 @@ If $RXU_Not(PreviousDetails = '') then ,
 $RXU._TestStatus = 'FAIL' PreviousDetails || Details
 If $RXU._SoftAsserts then Return
 Signal $RXU_TestComplete
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* $RXU_Not(Boolean)                                                         */
 /*                                                                           */
 /* Because some Rexx implementations have problems with not-sign operators.  */
 /*---------------------------------------------------------------------------*/
 $RXU_Not: Procedure
-
+ 
 If Arg(1) then Return 0
 Return 1
-
-
+ 
+ 
 $RXU_TrapError:
 Line = SigL /* Patch for Regina bug #610 */
 Call $RXU_TrapSprung 'ERROR', RC, Line
-
-
+ 
+ 
 $RXU_TrapFailure:
 Line = SigL /* Patch for Regina bug #610 */
 Call $RXU_TrapSprung 'FAILURE', RC, Line
-
-
+ 
+ 
 $RXU_TrapNotReady:
 Line = SigL /* Patch for Regina bug #610 */
 Call $RXU_TrapSprung 'NOTREADY', , Line
-
-
+ 
+ 
 $RXU_TrapNoValue:
 Line = SigL /* Patch for Regina bug #610 */
 Call $RXU_TrapSprung 'NOVALUE', , Line
-
-
+ 
+ 
 $RXU_TrapSyntax:
 Line = SigL /* Patch for Regina bug #610 */
 Call $RXU_TrapSprung 'SYNTAX', RC, Line
-
+ 
 /*---------------------------------------------------------------------------*/
 /* $RXU_SourceCode(line_num)                                                 */
 /*                                                                           */
@@ -1026,30 +1026,30 @@ Call $RXU_TrapSprung 'SYNTAX', RC, Line
 /*---------------------------------------------------------------------------*/
 $RXU_SourceCode: Procedure
 Arg Line
-
+ 
 Code = ''
 Do Line = Line by 1
    Code = Code Strip(SourceLine(Line))
    If $RXU_Not(Right(Code, 1) = ',') then Leave
    Code = Left(Code, Length(Code)-1)
 End
-
+ 
 Return Strip(Code)
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* $RXU_Start                                                                */
 /*                                                                           */
 /* Run the test.                                                             */
 /*---------------------------------------------------------------------------*/
 $RXU_Start:
-
+ 
 Drop $RXU.
 $RXU. = ''
 $RXU._ExpectOccurred = 0
 $RXU._ExpectFailure = 0
 $RXU._TestStatus = 'PASS'
-
+ 
 Parse arg  $RXU._Testname $RXU._HasSetup $RXU._HasTeardown $RXU._OS ,
     $RXU._RexxLevel $RXU._SoftAsserts .
 Signal on Error ; $RXU_TrapErrorDest = '$RXU_TrapError'
@@ -1060,18 +1060,18 @@ Signal on NoValue ; $RXU_TrapNoValueDest = '$RXU_TrapNoValue'
 Signal on Syntax; $RXU_TrapSyntaxDest = '$RXU_TrapSyntax'
 If $RXU._HasSetup then Call TestSetup
 Interpret 'Call' $RXU._Testname
-
+ 
 $RXU_TestComplete:
 If $RXU._HasTeardown then Call TestTeardown
-
+ 
 If $RXU._ExpectFailure & $RXU._TestStatus = 'PASS' then ,
     Exit 'XFAIL' $RXU._ExpectFailureMessage
 If $RXU._ExpectWhat = '' then Exit $RXU._TestStatus
 If $RXU._ExpectOccurred then Exit $RXU._TestStatus
 If $RXU_Not($RXU._ExpectMsg = '') then Exit 'FAIL' $RXU._ExpectMsg
 Exit 'FAIL Expected' $RXU._ExpectWhat $RXU._ExpectHow 'not SIGNALed'
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* $RXU_TrapSprung(ConditionName, [Details], Line)                           */
 /*                                                                           */
@@ -1080,7 +1080,7 @@ Exit 'FAIL Expected' $RXU._ExpectWhat $RXU._ExpectHow 'not SIGNALed'
 /* caller.                                                                   */
 /*---------------------------------------------------------------------------*/
 $RXU_TrapSprung:
-
+ 
 Signal off Error
 If $RXU._RexxLevel > 3.40 then Interpret "Signal off Failure"
 Signal off NotReady
@@ -1092,10 +1092,10 @@ if $RXU_Not($RXU._ExpectHow = '') then ,
     $RXU._ExpectOccurred = $RXU._ExpectOccurred & ($RXU._ExpectHow == Details)
 If $RXU._ExpectOccurred then $RXU._TestStatus = 'PASS'
 Else $RXU._TestStatus = 'SIGNAL' ConditionName Details
-
+ 
 Signal $RXU_TestComplete
-
-
+ 
+ 
 /*---------------------------------------------------------------------------*/
 /* $RXU_WordPos(needle, haystack, startword)                                 */
 /*                                                                           */
@@ -1103,7 +1103,7 @@ Signal $RXU_TestComplete
 /*---------------------------------------------------------------------------*/
 $RXU_WordPos: Procedure
 Parse arg Needle, Haystack, StartWord
-
+ 
 If StartWord = '' then StartWord = 1
 If Words(Needle) = 0 then Return 0
 Do I = StartWord by 1 while $RXU_Not(Haystack = '')
@@ -1114,48 +1114,48 @@ Do I = StartWord by 1 while $RXU_Not(Haystack = '')
     End
     Return I
 End
-
+ 
 Return 0
-
+ 
 /* Note: This program does not use SIGNAL ON condition NAME label,
          because it isn't supported in (at least) VM/SP5 Rexx.  Instead,
          it uses SignalDest='label'; SIGNAL ON condition; ... Syntax:
          SIGNAL VALUE SignalDest.  Yes, it's hokey.  But it works.
 */
-
+ 
 Error:
 Line = SigL /* Patch for Regina bug #610 */
 If Symbol('$RXU_TrapErrorDest') = 'VAR' then ,
     Signal value Translate($RXU_TrapErrorDest)
 Say 'Error in line' Line || ':' $RXU_SourceCode(Line)
 Exit 1
-
+ 
 Failure:
 Line = SigL /* Patch for Regina bug #610 */
 If Symbol('$RXU_TrapFailureDest') = 'VAR' then ,
     Signal value Translate($RXU_TrapFailureDest)
 Say 'Failure in line' Line || ':' $RXU_SourceCode(Line)
 Exit 2
-
+ 
 NotReady:
 Line = SigL /* Patch for Regina bug #610 */
 If Symbol('$RXU_TrapNotReadyDest') = 'VAR' then ,
     Signal value Translate($RXU_TrapNotReadyDest)
 Say 'NotReady in line' Line || ':' $RXU_SourceCode(Line)
 Exit 3
-
+ 
 NoValue:
 Line = SigL /* Patch for Regina bug #610 */
 If Symbol('$RXU_TrapNoValueDest') = 'VAR' then ,
     Signal value Translate($RXU_TrapNoValueDest)
 Say 'NoValue error in line' Line || ':' $RXU_SourceCode(Line)
 Exit 4
-
-
+ 
+ 
 Syntax:
 Line = SigL /* Patch for Regina bug #610 */
 If Symbol('$RXU_TrapSyntaxDest') = 'VAR' then ,
     Signal value Translate($RXU_TrapSyntaxDest)
 Say 'Syntax error' RC ErrorText(RC) 'in line' Line || ':' $RXU_SourceCode(Line)
 Exit 5
-
+ 

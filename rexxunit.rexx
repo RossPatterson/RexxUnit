@@ -222,10 +222,10 @@ Parse arg String, Pattern
  
 Select
     When String == Pattern then Return G._True
-    When Pos(Pattern, '*') > 0 then Do
+    When Pos('*',Pattern) > 0 then Do
         Parse var Pattern Before '*' After
-        If Left(String, Length(Before)) == Before & ,
-            Right(String, Length(After)) == After then Return G._True
+        Return (Left(String, Length(Before)) == Before & ,
+            Right(String, Length(After)) == After )
     End
     /* There are probably other patterns to check, but we'll code them later */
     Otherwise Return G._False

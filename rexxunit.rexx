@@ -309,7 +309,7 @@ End
 If G._Verbose then Say TestName '...'
 Interpret "TestResult = " G._TempFileName || "('" || Routine ,
     G._HasSetup.FilenameUpper G._HasTeardown.FilenameUpper G._OS G._RexxLevel ,
-    G._SoftAsserts || "')"
+    G._SoftAsserts G._AssertionDetails || "')"
  
 Parse var TestResult TestStatus TestMessage '15'x TestDetails
 TestStatus = Translate(TestStatus)
@@ -347,6 +347,7 @@ G. = ''
 G._True = (1=1)
 G._False = Not(G._True)
 G._Separator = Copies('=', 80)
+G._AssertionDetails = G._False
 G._SoftAsserts = G._False
 G._Verbose = G._False
 G._BadTests.0 = 0
@@ -529,6 +530,8 @@ Select
             Select
                 When Left(Option, 1) = ')' then Options = ''
                 When Option = 'HELP' then Call ShowHelp 'CMS'
+                When Option = 'DETAILS' then G._AssertionDetails = G._True
+                When Option = 'NODETAILS' then G._AssertionDetails = G._False
                 When Option = 'SOFT' then G._SoftAsserts = G._True
                 When Option = 'NOSOFT' then G._SoftAsserts = G._False
                 When Option = 'TYPE' then G._Verbose = G._True
@@ -594,6 +597,8 @@ Select
                     Parse var Arg Arg +2 Rest
                     Arg1 = '-' || Rest Arg1
                 End
+                When Arg = '--details' | Arg = '-d' then ,
+                   G._AssertionDetails = G._True
                 When Arg = '--help' | Arg = '-h' then Call ShowHelp 'UNIX'
                 When Arg = '--quiet' | Arg = '-q' then G._Verbose = G._False
                 When Arg = '--soft' | Arg = '-s' then G._SoftAsserts = G._True
@@ -643,6 +648,7 @@ Select
             Select
                 When Arg = '/?' | Translate(Arg) = '/H' then ,
                     Call ShowHelp 'WIN'
+                When Translate(Arg) = '/D' then G._AssertionDetails = G._True
                 When Translate(Arg) = '/Q' then G._Verbose = G._False
                 When Translate(Arg) = '/S' then G._SoftAsserts = G._True
                 When Translate(Arg) = '/V' then G._Verbose = G._True
@@ -710,10 +716,14 @@ Call Fail 'Test script ran off end of file instead of RETURNing.'
 AssertEndsWith: Procedure expose $RXU. SigL
 Parse arg  Expected, Actual, Message
  
-If Expected == Right(Actual, Length(Expected)) then Return
 Line = SigL /* Patch for Regina bug #610 */
-Call $RXU_AssertFailed 'Expected ending', Expected, 'Actual', Actual, ,
-    Message, Line
+OK = Expected == Right(Actual, Length(Expected))
+If $RXU._AssertionDetails | $RXU_Not(OK) then ,
+   Details = RXU$_AssertionDetails('Expected ending', Expected, 'Actual', ,
+      Actual, Line)
+If $RXU._AssertionDetails then Say Details
+If OK then Return
+Call $RXU_AssertFailed Message, Details
  
 Return
  
@@ -727,9 +737,14 @@ Return
 AssertEqual: Procedure expose $RXU. SigL
 Parse arg  Expected, Actual, Message
  
-If Expected = Actual then Return
 Line = SigL /* Patch for Regina bug #610 */
-Call $RXU_AssertFailed 'Expected', Expected, 'Actual', Actual, Message, Line
+OK = Expected = Actual
+If $RXU._AssertionDetails | $RXU_Not(OK) then ,
+   Details = RXU$_AssertionDetails('Expected', Expected, 'Actual', ,
+      Actual, Line)
+If $RXU._AssertionDetails then Say Details
+If OK then Return
+Call $RXU_AssertFailed Message, Details
  
 Return
  
@@ -743,9 +758,13 @@ Return
 AssertFalse: Procedure expose $RXU. SigL
 Parse arg  Actual, Message
  
-If $RXU_Not(Actual) then Return
 Line = SigL /* Patch for Regina bug #610 */
-Call $RXU_AssertFailed 'Expected', 0, 'Actual', Actual, Message, Line
+OK = $RXU_Not(Actual)
+If $RXU._AssertionDetails | $RXU_Not(OK) then ,
+   Details = RXU$_AssertionDetails('Expected', 0, 'Actual', Actual, Line)
+If $RXU._AssertionDetails then Say Details
+If OK then Return
+Call $RXU_AssertFailed Message, Details
  
 Return
  
@@ -759,9 +778,14 @@ Return
 AssertIdentical: Procedure expose $RXU. SigL
 Parse arg  Expected, Actual, Message
  
-If Expected == Actual then Return
 Line = SigL /* Patch for Regina bug #610 */
-Call $RXU_AssertFailed 'Expected', Expected, 'Actual', Actual, Message, Line
+OK = Expected == Actual
+If $RXU._AssertionDetails | $RXU_Not(OK) then ,
+   Details = RXU$_AssertionDetails('Expected', Expected, 'Actual', Actual, ,
+      Line)
+If $RXU._AssertionDetails then Say Details
+If OK then Return
+Call $RXU_AssertFailed Message, Details
  
 Return
  
@@ -775,9 +799,14 @@ Return
 AssertNotEqual: Procedure expose $RXU. SigL
 Parse arg  Expected, Actual, Message
  
-If $RXU_Not(Expected = Actual) then Return
 Line = SigL /* Patch for Regina bug #610 */
-Call $RXU_AssertFailed 'Expected', Expected, 'Actual', Actual, Message, Line
+OK = $RXU_Not(Expected = Actual)
+If $RXU._AssertionDetails | $RXU_Not(OK) then ,
+   Details = RXU$_AssertionDetails('Expected', Expected, 'Actual', Actual, ,
+      Line)
+If $RXU._AssertionDetails then Say Details
+If OK then Return
+Call $RXU_AssertFailed Message, Details
  
 Return
  
@@ -791,9 +820,14 @@ Return
 AssertNotIdentical: Procedure expose $RXU. SigL
 Parse arg  Expected, Actual, Message
  
-If $RXU_Not(Expected == Actual) then Return
 Line = SigL /* Patch for Regina bug #610 */
-Call $RXU_AssertFailed 'Expected', Expected, 'Actual', Actual, Message, Line
+OK = $RXU_Not(Expected == Actual)
+If $RXU._AssertionDetails | $RXU_Not(OK) then ,
+   Details = RXU$_AssertionDetails('Expected', Expected, 'Actual', Actual, ,
+      Line)
+If $RXU._AssertionDetails then Say Details
+If OK then Return
+Call $RXU_AssertFailed Message, Details
  
 Return
  
@@ -807,10 +841,14 @@ Return
 AssertStartsWith: Procedure expose $RXU. SigL
 Parse arg  Expected, Actual, Message
  
-If Expected == Left(Actual, Length(Expected)) then Return
 Line = SigL /* Patch for Regina bug #610 */
-Call $RXU_AssertFailed 'Expected begining', Expected, 'Actual', Actual, ,
-    Message, Line
+OK = Expected == Left(Actual, Length(Expected))
+If $RXU._AssertionDetails | $RXU_Not(OK) then ,
+   Details = RXU$_AssertionDetails('Expected begining', Expected, 'Actual', ,
+      Actual, Line)
+If $RXU._AssertionDetails then Say Details
+If OK then Return
+Call $RXU_AssertFailed Message, Details
  
 Return
  
@@ -824,9 +862,13 @@ Return
 AssertTrue: Procedure expose $RXU. SigL
 Parse arg  Actual, Message
  
-If Actual then Return
 Line = SigL /* Patch for Regina bug #610 */
-Call $RXU_AssertFailed 'Expected', 1, 'Actual', Actual, Message, Line
+OK = Actual
+If $RXU._AssertionDetails | $RXU_Not(OK) then ,
+   Details = RXU$_AssertionDetails('Expected', 1, 'Actual', Actual, Line)
+If $RXU._AssertionDetails then Say Details
+If OK then Return
+Call $RXU_AssertFailed Message, Details
  
 Return
  
@@ -866,7 +908,8 @@ Fail: Procedure expose $RXU. SigL
 Parse arg  Message
  
 Line = SigL /* Patch for Regina bug #610 */
-Call $RXU_AssertFailed , , , , Message, Line
+Call $RXU_AssertFailed RXU$_AssertionDetails(, , , , Message, Line)
+ 
 Return
  
  
@@ -951,24 +994,42 @@ Return
  
  
 /*---------------------------------------------------------------------------*/
-/* $RXU_AssertFailed([ExpectedText], [ExpectedValue], [ActualText            */
-/*                   [ActualValue], [Message], [Line])                       */
+/* $RXU_AssertFailed(Message, Details)                                       */
 /*                                                                           */
-/* Back-end processing for a failed assertion.  Constructs the response to   */
+/* Back-end processing for a failed assertion.  Adds to the response to      */
 /* the test runner and exits to $RXU_TestComplete.  Does not return to       */
 /* caller unless SoftAsserts is set.                                         */
 /*---------------------------------------------------------------------------*/
 $RXU_AssertFailed: Procedure expose $RXU.
+Parse arg Message, Details
+ 
 Signal off Error
 If $RXU._RexxLevel > 3.40 then Interpret "Signal off Failure"
 Signal off NotReady
 Signal off NoValue
 Signal off Syntax
-Parse arg ExpectedText, ExpectedValue, ActualText, ActualValue, Message, Line
 If Message = '' then Message = 'Assertion failed'
+Parse var $RXU._TestStatus . PreviousDetails
+If $RXU_Not(PreviousDetails = '') then ,
+    PreviousDetails = PreviousDetails || '15'x
+$RXU._TestStatus = 'FAIL' PreviousDetails || Message || '15'x || Details
+ 
+If $RXU._SoftAsserts then Return
+Signal $RXU_TestComplete
+ 
+ 
+/*---------------------------------------------------------------------------*/
+/* RXU$_AssertionDetails([ExpectedText], [ExpectedValue], [ActualText],      */
+/*                [ActualValue], [Line])                                     */
+/*                                                                           */
+/* Format and return a assertion-details string.                             */
+/*---------------------------------------------------------------------------*/
+RXU$_AssertionDetails: Procedure expose $RXU.
+ 
+Parse arg ExpectedText, ExpectedValue, ActualText, ActualValue, Line
 If $RXU_Not(Line = '') then FailingCode = Line-1':' $RXU_SourceCode(Line)
 Else FailingCode = ''
-Details = Message || '15'x || FailingCode
+Details = FailingCode
 TextWidth = Max(Length(ExpectedText), Length(ActualText))
 If $RXU_Not(ExpectedText = '') then ,
     Details = Details || '15'x || Left(ExpectedText, TextWidth) || ,
@@ -976,12 +1037,8 @@ If $RXU_Not(ExpectedText = '') then ,
 If $RXU_Not(ActualText = '') then ,
     Details = Details || '15'x || Left(ActualText, TextWidth) || ,
         ': ["' || ActualValue || '"]'
-Parse var $RXU._TestStatus . PreviousDetails
-If $RXU_Not(PreviousDetails = '') then ,
-    PreviousDetails = PreviousDetails || '15'x
-$RXU._TestStatus = 'FAIL' PreviousDetails || Details
-If $RXU._SoftAsserts then Return
-Signal $RXU_TestComplete
+ 
+Return Details
  
  
 /*---------------------------------------------------------------------------*/
@@ -1051,7 +1108,7 @@ $RXU._ExpectFailure = 0
 $RXU._TestStatus = 'PASS'
  
 Parse arg  $RXU._Testname $RXU._HasSetup $RXU._HasTeardown $RXU._OS ,
-    $RXU._RexxLevel $RXU._SoftAsserts .
+    $RXU._RexxLevel $RXU._SoftAsserts $RXU._AssertionDetails .
 Signal on Error ; $RXU_TrapErrorDest = '$RXU_TrapError'
 If $RXU._RexxLevel > 3.40 then ,
     Interpret "Signal on Failure ; $RXU_TrapFailureDest = '$RXU_TrapFailure'"

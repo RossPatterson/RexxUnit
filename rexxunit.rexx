@@ -561,7 +561,8 @@ Select
         'COPYFILE' InFn InFt InFm OutFn OutFt OutFm '( APPEND'
         X.0 = G._Framework.0
         Do I = 1 to X.0
-            X.I = G._Framework.I || ' ' /* Ensure Length() > 0 */
+            X.I = G._Framework.I
+            If X.I == '' then X.I = ' ' /* Ensure Length() > 0 */
         End
         'EXECIO' X.0 'DISKW' OutFn OutFt OutFm '( STEM X. FINIS'
     End

@@ -72,19 +72,18 @@ TestExpect:
 
 The RexxUnit command syntax is styled to the system where you are running it:
 * On CMS:
-  * `REXXUNIT` _fn1_[:_test1_] _fn2_[:_test2_] ... `(` [`HELP`] [`QUIET`]
+  * `REXXUNIT` _fnpat_[:_testpat]_ ... `(` [[`NO`]`DETAILS`] [`HELP`] [`QUIET`]
     [[`NO`]`SOFT`] [[`NO`]`TYPE`] [`)`]
   * All test files have the filetype `REXXUNIT`, and are located via the normal
     CMS disk-search order.
 * On Windows:
-  * `rexxunit` [`/q` | `/Q`] [`/s` | `/S`] [`/v` | `/V`] [`/?`]
-    _file1_[:_test1_] _file2_[:_test2_] ...
+  * `rexxunit` [`/d`|`/D`] [`/?`|`/H`] [`/q`|`/Q`] [`/s`|`/S`] [`/v`|`/V`]
+    _filepat_[:_testpat_] ...
   * All test filenames are relative to the current directory.
 * Elsewhere:
-  * `rexxunit` [`-h` | `--help`] [`-q` | `--quiet`] [`-s` | `--soft` ]
-    [`-v` | `--verbose`] _file1_[:_test1_] _file2_[:_test2_] ...
+  * `rexxunit` [`-d`|`--details`] [`-h`|`--help`] [`-q`|`--quiet`]
+    [`-s`|`--soft`] [`-v`|`--verbose`] _filepat_[:_testpat_] ...
   * All test filenames are relative to the current directory.
-
 ## Examples
 
 As an example, to run tests on Windows with
@@ -92,15 +91,15 @@ As an example, to run tests on Windows with
 
 ```bat
 C:\Ross\Source\VM\RexxUnit>rexx rexxunit.rexx example1.rexxunit
-================================================================================
+===============================================================================
 .S.F'asdfqwer' is not recognized as an internal or external command,
 operable program or batch file.
 .
-================================================================================
+===============================================================================
 example1.rexxunit:TestSkipper SKIP for no good reason
 example1.rexxunit:TestFail FAIL Because that's how I roll
-   9: 	Call Fail 'Because that''s how I roll'
-================================================================================
+   9:     Call Fail 'Because that''s how I roll'
+===============================================================================
 3 passed
 1 failed
 0 errors
@@ -142,12 +141,12 @@ example2.rexxunit:Test_12 ...
 example2.rexxunit:Test_12 PASS
 example2.rexxunit:Test_13 ...
 example2.rexxunit:Test_13 PASS
-================================================================================
+===============================================================================
 example2.rexxunit:Test_3 FAIL Assertion failed
    4: Test_3: Call AssertEqual 'abcabzabc', changestr('','abcabcabc','xy'); Return
    Expected: ["abcabzabc"]
    Actual  : ["abcabcabc"]
-================================================================================
+===============================================================================
 12 passed
 1 failed
 0 errors
@@ -167,39 +166,39 @@ or modifying a test, but should not be used for normal operation.
 
 The assertions you can use are:
 
-* `AssertEndsWith(expected, actual, [message])` - Return if the actual value ends
-  with the expected value, otherwise fail the test and optionally display the
-  message.
-* `AssertEqual(expected, actual, [message])` - Return if the actual value matches
-  the expected value via the rules that Rexx uses for "=", otherwise fail the
-  test and optionally display the message.
+* `AssertEndsWith(expected, actual, [message])` - Return if the actual value
+  ends with the expected value, otherwise fail the test and optionally display
+  the message.
+* `AssertEqual(expected, actual, [message])` - Return if the actual value
+  matches the expected value via the rules that Rexx uses for "=", otherwise
+  fail the test and optionally display the message.
 * `AssertFalse(actual, [message])` - Return if the actual value is false (i.e.,
   0), otherwise fail the test and optionally display the message.
-* `AssertIdentical(expected, actual, [message])` - Return if the actual value is
-  identical to the expected value, otherwise fail the test and optionally
+* `AssertIdentical(expected, actual, [message])` - Return if the actual value
+  is identical to the expected value, otherwise fail the test and optionally
   display the message.
-* `AssertNotEqual(expected, actual, [message])` - Return if the actual value does
-  not match the expected value via the rules that Rexx uses for "=", otherwise
-  fail the test and optionally display the message.
-* `AssertNotIdentical(expected, actual, [message])` - Return if the actual value
-  is not identical to the expected value, otherwise fail the test with and
-  optionally display the message.
+* `AssertNotEqual(expected, actual, [message])` - Return if the actual value
+  does not match the expected value via the rules that Rexx uses for "=",
+  otherwise fail the test and optionally display the message.
+* `AssertNotIdentical(expected, actual, [message])` - Return if the actual
+  value is not identical to the expected value, otherwise fail the test with
+  and optionally display the message.
 * `AssertStartsWith(expected, actual, [message])` - Return if the actual value
   starts with the expected value, otherwise fail the test and optionally
   display the message.
-* `AssertTrue(actual, [message])` - Return if the actual value is true (i.e., 1),
-  otherwise fail the test and optionally display the message.
+* `AssertTrue(actual, [message])` - Return if the actual value is true (i.e.,
+  1), otherwise fail the test and optionally display the message.
 
 ## Additonal functions
 
 Additonal functions supplied by RexxUnit:
 
-* `Expect(condition, [subcondition], [message])` - Expect the named condition to
-  occur before the test returns.  Condition must be one of 'ERROR', 'FAILURE',
-  'HALT', 'NOTREADY', 'NOVALUE', or 'SYNTAX', case independent. In the case of
-  'ERROR', 'FAILURE', and 'SYNTAX', there may be an expected subcondition RC
-  value.  If the condition does not occur, fail the test and optionally display
-  the message
+* `Expect(condition, [subcondition], [message])` - Expect the named condition
+  to occur before the test returns.  Condition must be one of 'ERROR',
+  'FAILURE', 'HALT', 'NOTREADY', 'NOVALUE', or 'SYNTAX', case independent. In
+  the case of 'ERROR', 'FAILURE', and 'SYNTAX', there may be an expected
+  subcondition RC value.  If the condition does not occur, fail the test and
+  optionally display the message
 * `Fail([message])` - Fail the test and optionally display the message.
 * `NoError(command)` - Execute a command with SIGNAL OFF ERROR and return its
   return code.  This is intended for test-support commands that that use the

@@ -408,11 +408,14 @@ SystemType = Arg(1)
  
 Select
     When SystemType = 'CMS' then ,
-        Say 'REXXUNIT fn1 fn2 ... ( [HELP] [QUIET] [[NO]TYPE] [)]'
+        Say 'REXXUNIT fn_pat[:test_pat] ... (' ,
+           '[[NO]DETAILS] [HELP] [QUIET] [[NO]SOFT] [[NO]TYPE] [)]'
     When SystemType = 'WIN' then ,
-        Say 'rexxunit [/q | /Q] [/v | /V] [/? | /H] file1 file2 ...'
+        Say 'rexxunit [/d|/D] [/?|/H] [/q|/Q] [/s|/S] [/v|/V]' ,
+            'file_pat[:test_pat]'
     When SystemType = 'UNIX' then ,
-        Say 'rexxunit [-h|--help] [-q|--quiet] [-v|--verbose] file1 file2 ...'
+        Say 'rexxunit [-d|--details] [-h|--help] [-q|--quiet] [-s|--soft]' ,
+            '[-v|--verbose] file_pat[:test_pat] ...'
     Otherwise Call ExitError 2, 'Bad system type:' SystemType
 End
  

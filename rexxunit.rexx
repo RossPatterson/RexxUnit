@@ -285,6 +285,7 @@ Say G._Separator
 Say G._Count.PASS 'passed'
 Say G._Count.FAIL 'failed'
 Say G._Count.ERROR 'errors'
+Say G._Count.SIGNAL 'SIGNALed'
 Say G._Count.SKIP 'skipped'
 Say G._Count.XFAIL 'passed when expected to fail'
 Say 'Elapsed time:' Time('E') 'seconds'

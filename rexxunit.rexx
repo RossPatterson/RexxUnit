@@ -716,7 +716,7 @@ Call Fail 'Test script ran off end of file instead of RETURNing.'
 /* the test with the optional assertion message.                             */
 /*---------------------------------------------------------------------------*/
 AssertEndsWith: Procedure expose $RXU. SigL
-Parse argExpected, Actual, Message
+Parse arg Expected, Actual, Message
  
 Line = SigL /* Patch for Regina bug #610 */
 OK = Expected == Right(Actual, Length(Expected))
@@ -737,7 +737,7 @@ Return
 /* the test with the optional assertion message.                             */
 /*---------------------------------------------------------------------------*/
 AssertEqual: Procedure expose $RXU. SigL
-Parse argExpected, Actual, Message
+Parse arg  Expected, Actual, Message
  
 Line = SigL /* Patch for Regina bug #610 */
 OK = Expected = Actual
@@ -758,7 +758,7 @@ Return
 /* with the optional assertion message.                                      */
 /*---------------------------------------------------------------------------*/
 AssertFalse: Procedure expose $RXU. SigL
-Parse argActual, Message
+Parse arg Actual, Message
  
 Line = SigL /* Patch for Regina bug #610 */
 OK = $RXU_Not(Actual)
@@ -778,7 +778,7 @@ Return
 /* fail the test with the optional assertion message.                        */
 /*---------------------------------------------------------------------------*/
 AssertIdentical: Procedure expose $RXU. SigL
-Parse argExpected, Actual, Message
+Parse arg Expected, Actual, Message
  
 Line = SigL /* Patch for Regina bug #610 */
 OK = Expected == Actual
@@ -799,7 +799,7 @@ Return
 /* fail the test with the optional assertion message.                        */
 /*---------------------------------------------------------------------------*/
 AssertNotEqual: Procedure expose $RXU. SigL
-Parse argExpected, Actual, Message
+Parse arg Expected, Actual, Message
  
 Line = SigL /* Patch for Regina bug #610 */
 OK = $RXU_Not(Expected = Actual)
@@ -820,7 +820,7 @@ Return
 /* otherwise fail the test with the optional assertion message.              */
 /*---------------------------------------------------------------------------*/
 AssertNotIdentical: Procedure expose $RXU. SigL
-Parse argExpected, Actual, Message
+Parse arg Expected, Actual, Message
  
 Line = SigL /* Patch for Regina bug #610 */
 OK = $RXU_Not(Expected == Actual)
@@ -841,7 +841,7 @@ Return
 /* the test with the optional assertion message.                             */
 /*---------------------------------------------------------------------------*/
 AssertStartsWith: Procedure expose $RXU. SigL
-Parse argExpected, Actual, Message
+Parse arg Expected, Actual, Message
  
 Line = SigL /* Patch for Regina bug #610 */
 OK = Expected == Left(Actual, Length(Expected))
@@ -862,7 +862,7 @@ Return
 /* with the optional assertion message.                                      */
 /*---------------------------------------------------------------------------*/
 AssertTrue: Procedure expose $RXU. SigL
-Parse argActual, Message
+Parse arg Actual, Message
  
 Line = SigL /* Patch for Regina bug #610 */
 OK = Actual
@@ -884,7 +884,7 @@ Return
 /* 'SYNTAX', there may be an expected subcondition RC value.                 */
 /*---------------------------------------------------------------------------*/
 Expect: Procedure expose $RXU.
-Parse arg$RXU._ExpectWhat, $RXU._ExpectHow, $RXU._ExpectMsg
+Parse arg $RXU._ExpectWhat, $RXU._ExpectHow, $RXU._ExpectMsg
  
 $RXU._ExpectWhat = Translate($RXU._ExpectWhat)
 If WordPos($RXU._ExpectWhat, ,
@@ -907,7 +907,7 @@ Return
 /* Fail the test with the optional message.                                  */
 /*---------------------------------------------------------------------------*/
 Fail: Procedure expose $RXU. SigL
-Parse argMessage
+Parse arg Message
  
 Line = SigL /* Patch for Regina bug #610 */
 Call $RXU_AssertFailed RXU$_AssertionDetails(, , , , Message, Line)
@@ -1109,7 +1109,7 @@ $RXU._ExpectOccurred = 0
 $RXU._ExpectFailure = 0
 $RXU._TestStatus = 'PASS'
  
-Parse arg$RXU._Testname $RXU._HasSetup $RXU._HasTeardown $RXU._OS ,
+Parse arg $RXU._Testname $RXU._HasSetup $RXU._HasTeardown $RXU._OS ,
     $RXU._RexxLevel $RXU._SoftAsserts $RXU._AssertionDetails .
 Signal on Error ; $RXU_TrapErrorDest = '$RXU_TrapError'
 If $RXU._RexxLevel > 3.40 then ,

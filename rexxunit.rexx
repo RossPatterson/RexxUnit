@@ -922,12 +922,12 @@ Return
 /* NoError(command)                                                          */
 /*                                                                           */
 /* Execute a command with SIGNAL OFF ERROR and return its return code.       */
+/* This is not a procedure, so the command can access the caller's variables.*/
 /*---------------------------------------------------------------------------*/
-NoError: Procedure expose $RXU. SigL
-Parse arg Command
+NoError:
  
 Signal off Error
-''Command
+''Arg(1)
 Signal on Error
  
 Return RC

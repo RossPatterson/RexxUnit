@@ -1058,28 +1058,23 @@ Return 1
  
  
 $RXU_TrapError:
-Line = SigL /* Patch for Regina bug #610 */
-Call $RXU_TrapSprung 'ERROR', RC, Line
+Call $RXU_TrapSprung 'ERROR', RC, RXU_TrapLine
  
  
 $RXU_TrapFailure:
-Line = SigL /* Patch for Regina bug #610 */
-Call $RXU_TrapSprung 'FAILURE', RC, Line
+Call $RXU_TrapSprung 'FAILURE', RC, RXU_TrapLine
  
  
 $RXU_TrapNotReady:
-Line = SigL /* Patch for Regina bug #610 */
-Call $RXU_TrapSprung 'NOTREADY', , Line
+Call $RXU_TrapSprung 'NOTREADY', , RXU_TrapLine
  
  
 $RXU_TrapNoValue:
-Line = SigL /* Patch for Regina bug #610 */
-Call $RXU_TrapSprung 'NOVALUE', , Line
+Call $RXU_TrapSprung 'NOVALUE', , RXU_TrapLine
  
  
 $RXU_TrapSyntax:
-Line = SigL /* Patch for Regina bug #610 */
-Call $RXU_TrapSprung 'SYNTAX', RC, Line
+Call $RXU_TrapSprung 'SYNTAX', RC, RXU_TrapLine
  
 /*---------------------------------------------------------------------------*/
 /* $RXU_SourceCode(line_num)                                                 */
@@ -1186,38 +1181,38 @@ Return 0
 */
  
 Error:
-Line = SigL /* Patch for Regina bug #610 */
+$RXU_TrapLine = SigL
 If Symbol('$RXU_TrapErrorDest') = 'VAR' then ,
     Signal value Translate($RXU_TrapErrorDest)
-Say 'Error in line' Line || ':' $RXU_SourceCode(Line)
+Say 'Error in line' RXU_TrapLine || ':' $RXU_SourceCode(RXU_TrapLine)
 Exit 1
  
 Failure:
-Line = SigL /* Patch for Regina bug #610 */
+$RXU_TrapLine = SigL
 If Symbol('$RXU_TrapFailureDest') = 'VAR' then ,
     Signal value Translate($RXU_TrapFailureDest)
-Say 'Failure in line' Line || ':' $RXU_SourceCode(Line)
+Say 'Failure in line' RXU_TrapLine || ':' $RXU_SourceCode(RXU_TrapLine)
 Exit 2
  
 NotReady:
-Line = SigL /* Patch for Regina bug #610 */
+$RXU_TrapLine = SigL
 If Symbol('$RXU_TrapNotReadyDest') = 'VAR' then ,
     Signal value Translate($RXU_TrapNotReadyDest)
-Say 'NotReady in line' Line || ':' $RXU_SourceCode(Line)
+Say 'NotReady in line' RXU_TrapLine || ':' $RXU_SourceCode(RXU_TrapLine)
 Exit 3
  
 NoValue:
-Line = SigL /* Patch for Regina bug #610 */
+$RXU_TrapLine = SigL
 If Symbol('$RXU_TrapNoValueDest') = 'VAR' then ,
     Signal value Translate($RXU_TrapNoValueDest)
-Say 'NoValue error in line' Line || ':' $RXU_SourceCode(Line)
+Say 'NoValue error in line' RXU_TrapLine || ':' $RXU_SourceCode(RXU_TrapLine)
 Exit 4
  
  
 Syntax:
-Line = SigL /* Patch for Regina bug #610 */
+$RXU_TrapLine = SigL
 If Symbol('$RXU_TrapSyntaxDest') = 'VAR' then ,
     Signal value Translate($RXU_TrapSyntaxDest)
-Say 'Syntax error' RC ErrorText(RC) 'in line' Line || ':' $RXU_SourceCode(Line)
+Say 'Syntax error' RC ErrorText(RC) 'in line' RXU_TrapLine || ':' $RXU_SourceCode(RXU_TrapLine)
 Exit 5
  

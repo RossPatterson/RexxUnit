@@ -1,0 +1,5 @@
+REXXUNIT Change LOG
+===================
+      - Add AssertStemEqual() and AssertStemIdentical()
+      - Make NoError() expose caller's vars, so EXECCOMM works for them.
+1.0.0 - First release.

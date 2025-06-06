@@ -859,6 +859,69 @@ Return
  
  
 /*---------------------------------------------------------------------------*/
+/* AssertStemEqual(expected_stem, actual_stem, [message])                    */
+/*                                                                           */
+/* Return if the actual stem matches the expected stem via the rules that    */
+/* Rexx uses for "=", otherwise fail the test with the optional assertion    */
+/* message.  Stems must be numeric-indexed with a count in stem.0, and are   */
+/* compared in order, starting at 0.                                         */
+/*---------------------------------------------------------------------------*/
+AssertStemEqual:
+ 
+$RXU_StemNames = Arg(1) Arg(2)
+Line = SigL /* Patch for Regina bug #610 */
+Call $RXU_ASEI_Inner Arg(1), Arg(2), 'EQUAL', Arg(3)
+ 
+Return
+ 
+ 
+/*---------------------------------------------------------------------------*/
+/* AssertStemIdentical(expected_stem, actual_stem, [message])                */
+/*                                                                           */
+/* Return if the actual stem is identical to  the expected stem, otherwise   */
+/* fail the test with the optional assertion message.  Stems must be numeric-*/
+/* indexed with a count in stem.0, and are compared in order, starting at 0. */
+/*---------------------------------------------------------------------------*/
+AssertStemIdentical:
+ 
+$RXU_StemNames = Arg(1) Arg(2)
+Line = SigL /* Patch for Regina bug #610 */
+Call $RXU_ASEI_Inner Arg(1), Arg(2), 'IDENTICAL', Arg(3)
+ 
+Return
+ 
+$RXU_ASEI_Inner: Procedure expose $RXU. Line ($RXU_StemNames)
+Parse arg  ExpectedStem, ActualStem, How, Message
+ 
+Expected0 = Value(ExpectedStem || '0')
+Actual0 = Value(ActualStem || '0')
+Select
+   When DataType(Expected0, 'W') & DataType(Actual0, 'W') then ,
+      MaxCount = Max(Expected0, Actual0)
+   When DataType(Expected0, 'W') then MaxCount = Expected0
+   Otherwise MaxCount = Actual0
+End
+AllOK = 1
+Details = ''
+Do I = 0 to MaxCount
+   Expected = Value(ExpectedStem || I)
+   Actual = Value(ActualStem || I)
+   If How = 'EQUAL' then OK = Expected = Actual
+   Else OK = Expected == Actual
+   AllOK = AllOK & OK
+   If $RXU_Not(OK) | $RXU._AssertionDetails then ,
+      Details = Details || '15'x || ,
+         RXU$_AssertionDetails('Expected', Expected, 'Actual', ,
+            Actual, Line)
+End
+If $RXU._AssertionDetails then Say Details
+If AllOK then Return
+Call $RXU_AssertFailed Message, Details
+ 
+Return /* NotReached */
+ 
+ 
+/*---------------------------------------------------------------------------*/
 /* AssertTrue(actual, [message])                                             */
 /*                                                                           */
 /* Return if the actual value is true (i.e., 1), otherwise fail the test     */

@@ -186,6 +186,15 @@ The assertions you can use are:
 * `AssertStartsWith(expected, actual, [message])` - Return if the actual value
   starts with the expected value, otherwise fail the test and optionally
   display the message.
+* `AssertStemEqual(expected_stem, actual_stem, [message])` -  Return if the
+  actual stem matches the expected stem via the rules that Rexx uses for "=",
+  otherwise fail the test with the optional assertion message.  Stems must be
+  numeric-indexed with a count in `stem.0`, and are compared in order, starting
+  at 0.
+* `AssertStemIdentical(expected_stem, actual_stem, [message])` -  Return if the
+  actual stem is identical to the expected stem, otherwise fail the test with
+  the optional assertion message.  Stems must be numeric-indexed with a count
+  in `stem.0`, and are compared in order, starting at 0.
 * `AssertTrue(actual, [message])` - Return if the actual value is true (i.e.,
   1), otherwise fail the test and optionally display the message.
 
@@ -198,7 +207,7 @@ Additonal functions supplied by RexxUnit:
   'FAILURE', 'HALT', 'NOTREADY', 'NOVALUE', or 'SYNTAX', case independent. In
   the case of 'ERROR', 'FAILURE', and 'SYNTAX', there may be an expected
   subcondition RC value.  If the condition does not occur, fail the test and
-  optionally display the message
+  optionally display the message.
 * `Fail([message])` - Fail the test and optionally display the message.
 * `NoError(command)` - Execute a command with SIGNAL OFF ERROR and return its
   return code.  This is intended for test-support commands that that use the

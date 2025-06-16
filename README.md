@@ -15,7 +15,7 @@
 Inspired by Rony Flatscher's [ooRexxUnit](https://wi.wu.ac.at/rgf/rexx/orx17/),
 an unit-testing framework for Open Object Rexx programs, and the basis for
 [ooTest](https://wi.wu.ac.at/rgf/rexx/misc/ooTest/ootest.pdf), a test suite for
-ooRexx itself, I've built a simple test framework for "Classic Rexx" (_i.e.,
+ooRexx itself, I've built a simple test framework for "Classic Rexx" (_i.e._,
 the language described in Mike Cowlishaw's "_The Rexx Language_", and
 standardized by the ANSI Rexx Committee).  My initial use for it is to test the
 [bREXX](https://github.com/rosspatterson/CMS-370-BREXX) Rexx implementation for
@@ -172,8 +172,8 @@ The assertions you can use are:
 * `AssertEqual(expected, actual, [message])` - Return if the actual value
   matches the expected value via the rules that Rexx uses for "=", otherwise
   fail the test and optionally display the message.
-* `AssertFalse(actual, [message])` - Return if the actual value is false (i.e.,
-  0), otherwise fail the test and optionally display the message.
+* `AssertFalse(actual, [message])` - Return if the actual value is false
+  (_i.e._, 0), otherwise fail the test and optionally display the message.
 * `AssertIdentical(expected, actual, [message])` - Return if the actual value
   is identical to the expected value, otherwise fail the test and optionally
   display the message.
@@ -195,8 +195,8 @@ The assertions you can use are:
   actual stem is identical to the expected stem, otherwise fail the test with
   the optional assertion message.  Stems must be numeric-indexed with a count
   in `stem.0`, and are compared in order, starting at 0.
-* `AssertTrue(actual, [message])` - Return if the actual value is true (i.e.,
-  1), otherwise fail the test and optionally display the message.
+* `AssertTrue(actual, [message])` - Return if the actual value is true
+  (_i.e.), 1), otherwise fail the test and optionally display the message.
 
 ## Additonal functions
 

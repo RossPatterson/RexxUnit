@@ -278,4 +278,13 @@ If Symbol('$RXU_TrapFailureDest') = 'VAR' then Signal value $RXU_TrapFailureDest
 ...
 ```
 
+Similarly, various Rexx implementations support the EBCDIC "logical not sign",
+the ASCII or EBCDIC backslash, and the ASCII or EBCDIC exclamation point for
+logical negation (_e.g._, in comparisons), or the "less than or greater than"
+combination (_i.e._, "<>") for "not equal", but there isn't broad enough
+agreement, so RexxUnit doesn't use any of those.  Instead, it expresses all
+comparisons in positive terms, and passes the result through a `Not()`
+function, which inverts the condition (_e.g._, `Do while Not(TestNames = '')`
+instead of `Do while TestNames <> ''`).
+
 Whew!

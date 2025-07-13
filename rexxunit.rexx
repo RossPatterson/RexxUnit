@@ -917,7 +917,7 @@ Do I = 0 to MaxCount
    AllOK = AllOK & OK
    If $RXU_Not(OK) | $RXU._AssertionDetails then ,
       Details = Details || '15'x || ,
-         RXU$_AssertionDetails('Expected', Expected, 'Actual', ,
+         RXU$_AssertionDetails('Expected' I, Expected, 'Actual' I, ,
             Actual, Line)
 End
 If $RXU._AssertionDetails then Say Details

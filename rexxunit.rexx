@@ -311,7 +311,8 @@ If G._Verbose then Say TestName '...'
 Interpret "TestResult = " G._TempFileName || "('" || Routine ,
     G._HasSetup.FilenameUpper G._HasTeardown.FilenameUpper G._OS G._RexxLevel ,
     G._SoftAsserts G._AssertionDetails || "')"
- 
+Call SystemInterface 'SYNCOUTPUT'
+
 Parse var TestResult TestStatus TestMessage '15'x TestDetails
 TestStatus = Translate(TestStatus)
 If WordPos(TestStatus, 'ERROR FAIL PASS SKIP SIGNAL XFAIL') = 0 then Do
@@ -433,7 +434,8 @@ Parse arg Action, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9
 
 Select
     When WordPos(Translate(Action), ,
-        'DELETEFILE LISTFILES PARSEARGS READFILE SETUP WRITETESTFILE') = 0 ,
+        'DELETEFILE LISTFILES PARSEARGS READFILE SETUP SYNCOUTPUT' ,
+        'WRITETESTFILE') = 0 ,
             then Call ExitError 3, 'Invalid system interface action:' Action
     When G._SystemInterface = 'CMS' then ,
         Call SyI_CMS Action, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, ,
@@ -554,6 +556,8 @@ Select
         Parse var G._TempFile G._TempFileName '.' .
         If G._RexxLevel < 3 then G._RexxLevel = '3.40'
     End
+    When Action = 'SYNCOUTPUT' then ,
+        'CONWAIT'
     When Action = 'WRITETESTFILE' then Do
         Parse upper var Arg1 InFn '.' InFt '.' InFm
         If InFm = '' then InFm = '*'
@@ -621,6 +625,7 @@ Select
         G._TempFile = 'rxutemp.rexx'
         G._TempFileName = G._TempFile
     End
+    When Action = 'SYNCOUTPUT' then Nop
     When Action = 'WRITETESTFILE' then Do
         Call DeleteFile Arg2
         Call SI_WriteTestStream Arg1, Arg2
@@ -670,6 +675,7 @@ Select
         G._TempFile = 'rxutemp.rexx'
         G._TempFileName = G._TempFile
     End
+    When Action = 'SYNCOUTPUT' then Nop
     When Action = 'WRITETESTFILE' then Do
         Call DeleteFile Arg2
         Call SI_WriteTestStream Arg1, Arg2

@@ -433,34 +433,33 @@ Exit
 SystemInterface: Procedure expose G. SI_Input. SI_Results.
 Parse arg Action, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9
 
-Select
-    When WordPos(Translate(Action), ,
-        'DELETEFILE LISTFILES PARSEARGS READFILE SETUP SYNCOUTPUT' ,
-        'WRITETESTFILE') = 0 ,
-            then Call ExitError 3, 'Invalid system interface action:' Action
-    When G._SystemInterface = 'CMS' then ,
-        Call SyI_CMS Action, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, ,
-            Arg7, Arg8, Arg9
-    When G._SystemInterface = 'WINDOWS' then ,
-        Call SyI_Windows Action, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, ,
-            Arg7, Arg8, Arg9
-    When G._SystemInterface = 'UNIX' then ,
-        Call SyI_Unix Action, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, ,
-            Arg7, Arg8, Arg9
-    Otherwise Call ExitError 4, 'Unknown system interface:' G._SystemInterface
+If Action = 'SETUP' then Do
+    G._SystemInterfaceTypes = 'CMS WINDOWS UNIX'
+    G._SystemInterface._CMS._Setup     = 'SI_CMS_Setup'
+    G._SystemInterface._Windows._Setup = 'SI_Windows_Setup'
+    G._SystemInterface._Unix._Setup    = 'SI_Unix_Setup'
 End
+Target = Value('G._SystemInterface._' || G._SystemInterface || '._' || Action)
+If Target <> '' then Signal Value Translate(Target)
+Call ExitError 3, 'Invalid system interface action:' Action
 
-Return
-
-SI_ReadStream: Procedure expose G. SI_Results.
-Parse arg InFile
-
-$RXU._TrapNotReadyDest = 'SIRS_EOF'
+/*---------------------------------------------------------------------------*/
+/* SI_Stream_*                                                              */
+/*                                                                           */
+/* Perform the specified system-interface action with the arguments parsed   */
+/* by SystemInterface, using Rexx stream I/O.                                */
+/*                                                                           */
+/* For obvious reasons, this interface is only partial, and is used by the   */
+/* other system-interface modules.                                           */
+/*---------------------------------------------------------------------------*/
+SI_Stream_ReadFile:
+InFile = Arg1
+$RXU._TrapNotReadyDest = 'SI_STREAM_READFILE_EOF'
 Signal on NotReady
 Do I = 1 by 1
     SI_Results.I = LineIn(InFile)
 End
-SIRS_EOF:
+SI_Stream_ReadFile_EOF:
 SI_Results.0 = I - 1
 Call Stream InFile, 'C', 'CLOSE'
 If Not(Result = 'UNKNOWN') then ,
@@ -468,18 +467,18 @@ If Not(Result = 'UNKNOWN') then ,
 
 Return
 
-SI_WriteTestStream: Procedure expose G.
-Parse arg InFile, OutFile
-
+SI_Stream_WriteTestFile:
+InFile = Arg1
+OutFile = Arg2
 Call Stream OutFile, 'C', 'OPEN WRITE REPLACE'
 Call LineOut OutFile, '/* RexxUnit Test Case file */ Signal $RXU_Start'
 Call Stream InFile, 'C', 'OPEN READ'
-$RXU._TrapNotReadyDest = 'SIWTS_EOF'
+$RXU._TrapNotReadyDest = 'SI_STREAM_WRITETESTFILE_EOF'
 Signal on NotReady
 Do Forever
     Call LineOut OutFile, LineIn(InFile)
 End
-SIWTS_EOF:
+SI_Stream_WriteTestFile_EOF:
 Call Stream InFile, 'C', 'CLOSE'
 Do I = 1 to G._Framework.0
     Call LineOut OutFile, G._Framework.I
@@ -490,203 +489,209 @@ Return
 
 
 /*---------------------------------------------------------------------------*/
-/* SyI_CMS(Action, Arg1, Arg2, ...)                                          */
+/* SI_CMS_*                                                                  */
 /*                                                                           */
-/* Perform the specified system-interface action with the specified          */
-/* arguments for the CMS system.                                             */
+/* Perform the specified system-interface action with the arguments parsed   */
+/* by SystemInterface, for the CMS system.                                   */
 /*---------------------------------------------------------------------------*/
-SyI_CMS: Procedure expose G. SI_Input. SI_Results.
-Parse arg Action, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9
+SI_CMS_DeleteFile:
+    Parse upper var Arg1 Fn '.' Ft '.' Fm
+    If Fm = '' then Fm = 'A'
+    'SET CMSTYPE HT'
+    'ERASE' Fn Ft Fm
+    'SET CMSTYPE RT'
+Return
 
-Select
-    When Action = 'DELETEFILE' then Do
-        Parse upper var Arg1 Fn '.' Ft '.' Fm
-        If Fm = '' then Fm = 'A'
-        'SET CMSTYPE HT'
-        'ERASE' Fn Ft Fm
-        'SET CMSTYPE RT'
+SI_CMS_ListFiles:
+    Parse upper var Arg1 Fn '.' Ft
+    'MAKEBUF'
+    BufferNum = RC
+    StackedBefore = Queued()
+    'LISTFILE' Fn Ft '* ( FIFO'
+    FileCount = Queued() - StackedBefore
+    Do I = 1 to FileCount
+        Pull Fn Ft .
+        SI_Results.I = Fn || '.' || Ft
     End
-    When Action = 'LISTFILES' then Do
-        Parse upper var Arg1 Fn '.' Ft
-        'MAKEBUF'
-        BufferNum = RC
-        'SENTRIES'
-        StackedBefore = RC
-        'LISTFILE' Fn Ft '* ( FIFO'
-        'SENTRIES'
-        FileCount = RC - StackedBefore
-        Do I = 1 to FileCount
-            Pull Fn Ft .
-            SI_Results.I = Fn || '.' || Ft
-        End
-        SI_Results.0 = FileCount
-        'DROPBUF' BufferNum
+    SI_Results.0 = FileCount
+    'DROPBUF' BufferNum
+Return
+
+SI_CMS_ParseArgs:
+    Parse var Arg1 Operands '(' Options
+    Options = Translate(Options)
+    Do while Not(Operands = '')
+        Parse var Operands Testname Operands
+        Parse var Testname Fn ':' Routine
+        G._TestNamePatterns = G._TestNamePatterns Fn || ,
+            '.rexxunit:' || Routine
     End
-    When Action = 'PARSEARGS' then Do
-        Parse var Arg1 Operands '(' Options
-        Options = Translate(Options)
-        Do while Not(Operands = '')
-            Parse var Operands Testname Operands
-            Parse var Testname Fn ':' Routine
-            G._TestNamePatterns = G._TestNamePatterns Fn || ,
-                '.rexxunit:' || Routine
-        End
-        If G._TestNamePatterns = '' then G._TestNamePatterns = '*.rexxunit'
-        Do while Not(Options = '')
-            Parse var Options Option Options
-            Select
-                When Left(Option, 1) = ')' then Options = ''
-                When Option = 'HELP' then Call ShowHelp 'CMS'
-                When Option = 'DETAILS' then G._AssertionDetails = G._True
-                When Option = 'NODETAILS' then G._AssertionDetails = G._False
-                When Option = 'SOFT' then G._SoftAsserts = G._True
-                When Option = 'NOSOFT' then G._SoftAsserts = G._False
-                When Option = 'TRACE' then G._Trace = G._True
+    If G._TestNamePatterns = '' then G._TestNamePatterns = '*.rexxunit'
+    Do while Not(Options = '')
+        Parse var Options Option Options
+        Select
+            When Left(Option, 1) = ')' then Options = ''
+            When Option = 'HELP' then Call ShowHelp 'CMS'
+            When Option = 'DETAILS' then G._AssertionDetails = G._True
+            When Option = 'NODETAILS' then G._AssertionDetails = G._False
+            When Option = 'SOFT' then G._SoftAsserts = G._True
+            When Option = 'NOSOFT' then G._SoftAsserts = G._False
+            When Option = 'TRACE' then G._Trace = G._True
                 When Option = 'NOTRACE' then G._Trace = G._True
-                When Option = 'TYPE' then G._Verbose = G._True
-                When Option = 'NOTYPE' | Option = 'QUIET' then ,
-                    G._Verbose = G._False
-                Otherwise Call ExitError 6, 'Unknown option:' Option
-            End
+            When Option = 'TYPE' then G._Verbose = G._True
+            When Option = 'NOTYPE' | Option = 'QUIET' then ,
+                G._Verbose = G._False
+            Otherwise Call ExitError 6, 'Unknown option:' Option
+
         End
     End
-    When Action = 'READFILE' then Do
-        Parse upper var Arg1 Fn '.' Ft
-        'EXECIO * DISKR' Fn Ft '* ( STEM SI_RESULTS. FINIS'
+Return
+
+SI_CMS_ReadFile:
+    Parse upper var Arg1 Fn '.' Ft
+    'EXECIO * DISKR' Fn Ft '* ( STEM SI_RESULTS. FINIS'
+Return
+
+SI_CMS_Setup:
+    G._SystemInterface._CMS._DeleteFile    = 'SI_CMS_DeleteFile'
+    G._SystemInterface._CMS._ListFiles     = 'SI_CMS_ListFiles'
+    G._SystemInterface._CMS._ParseArgs     = 'SI_CMS_ParseArgs'
+    G._SystemInterface._CMS._ReadFile      = 'SI_CMS_ReadFile'
+    G._SystemInterface._CMS._SyncOutput    = 'SI_CMS_SyncOutput'
+    G._SystemInterface._CMS._WriteTestFile = 'SI_CMS_WriteTestFile'
+    G._TempFile = 'RXUTEMP.EXEC.A'
+    Parse var G._TempFile G._TempFileName '.' .
+    If G._RexxLevel < 3 then G._RexxLevel = '3.40'
+Return
+
+SI_CMS_SyncOutput:
+    'CONWAIT'
+Return
+
+SI_CMS_WriteTestFile:
+    Parse upper var Arg1 InFn '.' InFt '.' InFm
+    If InFm = '' then InFm = '*'
+    Parse upper var Arg2 OutFn '.' OutFt '.' OutFm
+    If OutFm = '' then OutFm = 'A'
+    Call DeleteFile Arg2
+    'EXECIO 1 DISKW' OutFn OutFt OutFm '( FINIS STRING',
+        '/* RexxUnit Test Case file */ Signal $RXU_Start'
+    'COPYFILE' InFn InFt InFm OutFn OutFt OutFm '( APPEND'
+    X.0 = G._Framework.0
+    Do I = 1 to X.0
+        X.I = G._Framework.I
+        If X.I == '' then X.I = ' ' /* Ensure Length() > 0 */
     End
-    When Action = 'SETUP' then Do
-        G._TempFile = 'RXUTEMP.EXEC.A'
-        Parse var G._TempFile G._TempFileName '.' .
-        If G._RexxLevel < 3 then G._RexxLevel = '3.40'
-    End
-    When Action = 'SYNCOUTPUT' then ,
-        'CONWAIT'
-    When Action = 'WRITETESTFILE' then Do
-        Parse upper var Arg1 InFn '.' InFt '.' InFm
-        If InFm = '' then InFm = '*'
-        Parse upper var Arg2 OutFn '.' OutFt '.' OutFm
-        If OutFm = '' then OutFm = 'A'
-        Call DeleteFile Arg2
-        'EXECIO 1 DISKW' OutFn OutFt OutFm '( FINIS STRING',
-            '/* RexxUnit Test Case file */ Signal $RXU_Start'
-        'COPYFILE' InFn InFt InFm OutFn OutFt OutFm '( APPEND'
-        X.0 = G._Framework.0
-        Do I = 1 to X.0
-            X.I = G._Framework.I
-            If X.I == '' then X.I = ' ' /* Ensure Length() > 0 */
-        End
-        'EXECIO' X.0 'DISKW' OutFn OutFt OutFm '( STEM X. FINIS'
-    End
-End
+    'EXECIO' X.0 'DISKW' OutFn OutFt OutFm '( STEM X. FINIS'
 
 Return
 
 
 /*---------------------------------------------------------------------------*/
-/* SyI_Unix(Action, Arg1, Arg2, ...)                                         */
+/* SI_Unix_*                                                                 */
 /*                                                                           */
-/* Perform the specified system-interface action with the specified          */
-/* arguments.                                                                */
+/* Perform the specified system-interface action with the arguments parsed   */
+/* by SystemInterface, for the Unix system.                                  */
 /*---------------------------------------------------------------------------*/
-SyI_Unix: Procedure expose G. SI_Input. SI_Results.
-Parse arg Action, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9
+SI_Unix_DeleteFile:
+    If Words(Arg1) > 1 | Arg1 = '*' then Call ExitError 9, 'No.'
+    'rm' Arg1 '2>/dev/null'
+Return
 
-Select
-    When Action = 'DELETEFILE' then Do
-        If Words(Arg1) > 1 | Arg1 = '*' then Call ExitError 9, 'No.'
-        'rm' Arg1 '2>/dev/null'
-    End
-    When Action = 'LISTFILES' then ,
-        Address SYSTEM 'ls' Arg1 with output stem SI_Results.
-    When Action = 'PARSEARGS' then Do
-        G._TestNamePatterns = ''
-        Do while Not(Arg1 = '')
-            Parse var Arg1 Arg Arg1
-            Select
-                When Arg = '--' then Leave
-                When Left(Arg,1) = '-' & Not(Left(Arg,2) = '--') & ,
-                    Length(Arg) > 2 then Do
-                    Parse var Arg Arg +2 Rest
-                    Arg1 = '-' || Rest Arg1
-                End
-                When Arg = '--details' | Arg = '-d' then ,
-                   G._AssertionDetails = G._True
-                When Arg = '--help' | Arg = '-h' then Call ShowHelp 'UNIX'
-                When Arg = '--quiet' | Arg = '-q' then G._Verbose = G._False
-                When Arg = '--soft' | Arg = '-s' then G._SoftAsserts = G._True
+SI_Unix_ListFiles:
+    Address SYSTEM 'ls' Arg1 with output stem SI_Results.
+Return
+
+SI_Unix_ParseArgs:
+    G._TestNamePatterns = ''
+    Do while Not(Arg1 = '')
+        Parse var Arg1 Arg Arg1
+        Select
+            When Arg = '--' then Leave
+            When Left(Arg,1) = '-' & Not(Left(Arg,2) = '--') & ,
+                Length(Arg) > 2 then Do
+                Parse var Arg Arg +2 Rest
+                Arg1 = '-' || Rest Arg1
+            End
+            When Arg = '--details' | Arg = '-d' then ,
+               G._AssertionDetails = G._True
+            When Arg = '--help' | Arg = '-h' then Call ShowHelp 'UNIX'
+            When Arg = '--quiet' | Arg = '-q' then G._Verbose = G._False
+            When Arg = '--soft' | Arg = '-s' then G._SoftAsserts = G._True
                 When Arg = '--trace' | Arg = '-t' then G._Trace = G._True
-                When Arg = '--verbose' | Arg = '-v' then G._Verbose = G._True
-                When Left(Arg, 1) = '-' then ,
-                    Call ExitError 10, 'Unknown option:' Arg
-                Otherwise G._TestNamePatterns = G._TestNamePatterns Arg
-            End
+            When Arg = '--verbose' | Arg = '-v' then G._Verbose = G._True
+            When Left(Arg, 1) = '-' then ,
+                Call ExitError 10, 'Unknown option:' Arg
+            Otherwise G._TestNamePatterns = G._TestNamePatterns Arg
         End
-        G._TestNamePatterns = G._TestNamePatterns Arg1
-        If G._TestNamePatterns = '' then G._TestNamePatterns = '*.rexxunit'
     End
-    When Action = 'READFILE' then Call SI_ReadStream Arg1
-    When Action = 'SETUP' then Do
-        G._TempFile = 'rxutemp.rexx'
-        G._TempFileName = G._TempFile
-    End
-    When Action = 'SYNCOUTPUT' then Nop
-    When Action = 'WRITETESTFILE' then Do
-        Call DeleteFile Arg2
-        Call SI_WriteTestStream Arg1, Arg2
-    End
-End
+    G._TestNamePatterns = G._TestNamePatterns Arg1
+    If G._TestNamePatterns = '' then G._TestNamePatterns = '*.rexxunit'
+Return
 
+SI_Unix_Setup:
+    G._SystemInterface._Unix._DeleteFile    = 'SI_Unix_DeleteFile'
+    G._SystemInterface._Unix._ListFiles     = 'SI_Unix_ListFiles'
+    G._SystemInterface._Unix._ParseArgs     = 'SI_Unix_ParseArgs'
+    G._SystemInterface._Unix._ReadFile      = 'SI_Stream_ReadFile'
+    G._SystemInterface._Unix._SyncOutput    = 'SI_Unix_SyncOutput'
+    G._SystemInterface._Unix._WriteTestFile = 'SI_Stream_WriteTestFile'
+    G._TempFile = 'rxutemp.rexx'
+    G._TempFileName = G._TempFile
+Return
+
+SI_Unix_SyncOutput:
 Return
 
 
 /*---------------------------------------------------------------------------*/
-/* SyI_Windows(Action, Arg1, Arg2, ...)                                      */
+/* SI_Windows_*                                                              */
 /*                                                                           */
-/* Perform the specified system-interface action with the specified          */
-/* arguments.                                                                */
+/* Perform the specified system-interface action with the arguments parsed   */
+/* by SystemInterface, for the Windows system.                               */
 /*---------------------------------------------------------------------------*/
-SyI_Windows: Procedure expose G. SI_Input. SI_Results.
-Parse arg Action, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9
+SI_Windows_DeleteFile:
+    If Words(Arg1) > 1 | Arg1 = '*.*' then Call ExitError 7, 'No.'
+    'DEL' Arg1 '2>NUL:'
+Return
 
-Select
-    When Action = 'DELETEFILE' then Do
-        If Words(Arg1) > 1 | Arg1 = '*.*' then Call ExitError 7, 'No.'
-        'DEL' Arg1 '2>NUL:'
-    End
-    When Action = 'LISTFILES' then ,
-        Address SYSTEM 'DIR /B' Arg1 with output stem SI_Results.
-    When Action = 'PARSEARGS' then Do
-        G._TestNamePatterns = ''
-        Do while Not(Arg1 = '')
-            Parse var Arg1 Arg Arg1
-            Select
-                When Arg = '/?' | Translate(Arg) = '/H' then ,
-                    Call ShowHelp 'WIN'
-                When Translate(Arg) = '/D' then G._AssertionDetails = G._True
-                When Translate(Arg) = '/Q' then G._Verbose = G._False
-                When Translate(Arg) = '/S' then G._SoftAsserts = G._True
+SI_Windows_ListFiles:
+    Address SYSTEM 'DIR /B' Arg1 with output stem SI_Results.
+Return
+
+SI_Windows_ParseArgs:
+    G._TestNamePatterns = ''
+    Do while Not(Arg1 = '')
+        Parse var Arg1 Arg Arg1
+        Select
+            When Arg = '/?' | Translate(Arg) = '/H' then ,
+                Call ShowHelp 'WIN'
+            When Translate(Arg) = '/D' then G._AssertionDetails = G._True
+            When Translate(Arg) = '/Q' then G._Verbose = G._False
+            When Translate(Arg) = '/S' then G._SoftAsserts = G._True
                 When Translate(Arg) = '/T' then G._Trace = G._True
-                When Translate(Arg) = '/V' then G._Verbose = G._True
-                When Left(Arg, 1) = '/' then ,
-                    Call ExitError 8, 'Unknown option:' Arg
-                Otherwise G._TestNamePatterns = G._TestNamePatterns Arg
-            End
+            When Translate(Arg) = '/V' then G._Verbose = G._True
+            When Left(Arg, 1) = '/' then ,
+                Call ExitError 8, 'Unknown option:' Arg
+            Otherwise G._TestNamePatterns = G._TestNamePatterns Arg
         End
-        If G._TestNamePatterns = '' then G._TestNamePatterns = '*.rexxunit'
     End
-    When Action = 'READFILE' then Call SI_ReadStream Arg1
-    When Action = 'SETUP' then Do
-        G._OS = 'WINDOWS'
-        G._TempFile = 'rxutemp.rexx'
-        G._TempFileName = G._TempFile
-    End
-    When Action = 'SYNCOUTPUT' then Nop
-    When Action = 'WRITETESTFILE' then Do
-        Call DeleteFile Arg2
-        Call SI_WriteTestStream Arg1, Arg2
-    End
-End
+    If G._TestNamePatterns = '' then G._TestNamePatterns = '*.rexxunit'
+Return
 
+SI_Windows_Setup:
+    G._SystemInterface._Windows._DeleteFile    = 'SI_Windows_DeleteFile'
+    G._SystemInterface._Windows._ListFiles     = 'SI_Windows_ListFiles'
+    G._SystemInterface._Windows._ParseArgs     = 'SI_Windows_ParseArgs'
+    G._SystemInterface._Windows._ReadFile      = 'SI_Stream_ReadFile'
+    G._SystemInterface._Windows._SyncOutput    = 'SI_Windows_SyncOutput'
+    G._SystemInterface._Windows._WriteTestFile = 'SI_Stream_WriteTestFile'
+    G._OS = 'WINDOWS'
+    G._TempFile = 'rxutemp.rexx'
+    G._TempFileName = G._TempFile
+Return
+
+SI_Windows_SyncOutput:
 Return
 
 

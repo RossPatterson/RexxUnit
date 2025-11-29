@@ -992,7 +992,7 @@ Fail: Procedure expose $RXU. SigL
 Parse arg Message
 
 Line = SigL /* Patch for Regina bug #610 */
-Call $RXU_AssertFailed RXU$_AssertionDetails(, , , , Message, Line)
+Call $RXU_AssertFailed Message, RXU$_AssertionDetails(, , , , Line)
 
 Return
 

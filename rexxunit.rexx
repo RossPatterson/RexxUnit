@@ -310,7 +310,7 @@ End
 If G._Verbose then Say TestName '...'
 Interpret "TestResult = " G._TempFileName || "('" || Routine ,
     G._HasSetup.FilenameUpper G._HasTeardown.FilenameUpper G._OS G._RexxLevel ,
-    G._SoftAsserts G._AssertionDetails || "')"
+    G._SoftAsserts G._AssertionDetails G._Trace || "')"
 Call SystemInterface 'SYNCOUTPUT'
 
 Parse var TestResult TestStatus TestMessage '15'x TestDetails
@@ -351,6 +351,7 @@ G._False = Not(G._True)
 G._Separator = Copies('=', 80)
 G._AssertionDetails = G._False
 G._SoftAsserts = G._False
+G._Trace = G._False
 G._Verbose = G._False
 G._BadTests.0 = 0
 G._Char.ERROR  = 'E'
@@ -412,11 +413,11 @@ Select
         Say 'REXXUNIT fn_pat[:test_pat] ... (' ,
            '[[NO]DETAILS] [HELP] [QUIET] [[NO]SOFT] [[NO]TYPE] [)]'
     When SystemType = 'WIN' then ,
-        Say 'rexxunit [/d|/D] [/?|/H] [/q|/Q] [/s|/S] [/v|/V]' ,
+        Say 'rexxunit [/d|/D] [/?|/H] [/q|/Q] [/s|/S] [/t|/T] [/v|/V]' ,
             'file_pat[:test_pat]'
     When SystemType = 'UNIX' then ,
         Say 'rexxunit [-d|--details] [-h|--help] [-q|--quiet] [-s|--soft]' ,
-            '[-v|--verbose] file_pat[:test_pat] ...'
+            '[-t|--trace] [-v|--verbose] file_pat[:test_pat] ...'
     Otherwise Call ExitError 2, 'Bad system type:' SystemType
 End
 
@@ -540,6 +541,8 @@ Select
                 When Option = 'NODETAILS' then G._AssertionDetails = G._False
                 When Option = 'SOFT' then G._SoftAsserts = G._True
                 When Option = 'NOSOFT' then G._SoftAsserts = G._False
+                When Option = 'TRACE' then G._Trace = G._True
+                When Option = 'NOTRACE' then G._Trace = G._True
                 When Option = 'TYPE' then G._Verbose = G._True
                 When Option = 'NOTYPE' | Option = 'QUIET' then ,
                     G._Verbose = G._False
@@ -611,6 +614,7 @@ Select
                 When Arg = '--help' | Arg = '-h' then Call ShowHelp 'UNIX'
                 When Arg = '--quiet' | Arg = '-q' then G._Verbose = G._False
                 When Arg = '--soft' | Arg = '-s' then G._SoftAsserts = G._True
+                When Arg = '--trace' | Arg = '-t' then G._Trace = G._True
                 When Arg = '--verbose' | Arg = '-v' then G._Verbose = G._True
                 When Left(Arg, 1) = '-' then ,
                     Call ExitError 10, 'Unknown option:' Arg
@@ -661,6 +665,7 @@ Select
                 When Translate(Arg) = '/D' then G._AssertionDetails = G._True
                 When Translate(Arg) = '/Q' then G._Verbose = G._False
                 When Translate(Arg) = '/S' then G._SoftAsserts = G._True
+                When Translate(Arg) = '/T' then G._Trace = G._True
                 When Translate(Arg) = '/V' then G._Verbose = G._True
                 When Left(Arg, 1) = '/' then ,
                     Call ExitError 8, 'Unknown option:' Arg

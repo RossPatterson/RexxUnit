@@ -77,12 +77,13 @@ The RexxUnit command syntax is styled to the system where you are running it:
   * All test files have the filetype `REXXUNIT`, and are located via the normal
     CMS disk-search order.
 * On Windows:
-  * `rexxunit` [`/d`|`/D`] [`/?`|`/H`] [`/q`|`/Q`] [`/s`|`/S`] [`/v`|`/V`]
-    _filepat_[:_testpat_] ...
+  * `rexxunit` [`/d`|`/D`] [`/?`|`/H`] [`/q`|`/Q`] [`/s`|`/S`] [`/t`|`/T`]
+    [`/v`|`/V`] _filepat_[:_testpat_] ...
   * All test filenames are relative to the current directory.
 * Elsewhere:
   * `rexxunit` [`-d`|`--details`] [`-h`|`--help`] [`-q`|`--quiet`]
-    [`-s`|`--soft`] [`-v`|`--verbose`] _filepat_[:_testpat_] ...
+    [`-t`|`--trace`] [`-s`|`--soft`] [`-v`|`--verbose`]
+    _filepat_[:_testpat_] ...
   * All test filenames are relative to the current directory.
 ## Examples
 

@@ -90,16 +90,16 @@ As an example, to run tests on Windows with
 [Regina](https://regina-rexx.sourceforge.io/) installed:
 
 ```bat
-C:\Ross\Source\VM\RexxUnit>rexx rexxunit.rexx example1.rexxunit
-===============================================================================
+C:\Ross\Source\VM\RexxUnit>regina rexxunit.rexx example1.rexxunit
+================================================================================
 .S.F'asdfqwer' is not recognized as an internal or external command,
 operable program or batch file.
 .
-===============================================================================
+================================================================================
 example1.rexxunit:TestSkipper SKIP for no good reason
 example1.rexxunit:TestFail FAIL Because that's how I roll
-   9:     Call Fail 'Because that''s how I roll'
-===============================================================================
+   9:   Call Fail 'Because that''s how I roll'
+================================================================================
 3 passed
 1 failed
 0 errors
@@ -109,7 +109,7 @@ Elapsed time: .119000 seconds
 ```
 
 ```bat
-C:\Ross\Source\VM\RexxUnit>rexx rexxunit.rexx /v example2.rexxunit
+C:\Ross\Source\VM\RexxUnit>regina rexxunit.rexx /v example2.rexxunit
 example2.rexxunit: 13 tests
 ================================================================================
 example2.rexxunit:Test_1 ...
@@ -141,12 +141,12 @@ example2.rexxunit:Test_12 ...
 example2.rexxunit:Test_12 PASS
 example2.rexxunit:Test_13 ...
 example2.rexxunit:Test_13 PASS
-===============================================================================
+================================================================================
 example2.rexxunit:Test_3 FAIL Assertion failed
    4: Test_3: Call AssertEqual 'abcabzabc', changestr('','abcabcabc','xy'); Return
    Expected: ["abcabzabc"]
    Actual  : ["abcabcabc"]
-===============================================================================
+================================================================================
 12 passed
 1 failed
 0 errors

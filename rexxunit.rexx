@@ -351,7 +351,7 @@ G._False = Not(G._True)
 G._Separator = Copies('=', 80)
 G._AssertionDetails = G._False
 G._SoftAsserts = G._False
-G._Trace = G._False
+G._Trace = 'N'
 G._Verbose = G._False
 G._BadTests.0 = 0
 G._Char.ERROR  = 'E'
@@ -411,13 +411,13 @@ SystemType = Arg(1)
 Select
     When SystemType = 'CMS' then ,
         Say 'REXXUNIT fn_pat[:test_pat] ... (' ,
-           '[[NO]DETAILS] [HELP] [QUIET] [[NO]SOFT] [[NO]TYPE] [)]'
+           '[[NO]DETAILS] [HELP] [QUIET] [[NO]SOFT] [TRACE opt] [[NO]TYPE] [)]'
     When SystemType = 'WIN' then ,
-        Say 'rexxunit [/d|/D] [/?|/H] [/q|/Q] [/s|/S] [/t|/T] [/v|/V]' ,
+        Say 'rexxunit [/d|/D] [/?|/H] [/q|/Q] [/s|/S] [/t|/T opt] [/v|/V]' ,
             'file_pat[:test_pat]'
     When SystemType = 'UNIX' then ,
         Say 'rexxunit [-d|--details] [-h|--help] [-q|--quiet] [-s|--soft]' ,
-            '[-t|--trace] [-v|--verbose] file_pat[:test_pat] ...'
+            '[-t|--trace opt] [-v|--verbose] file_pat[:test_pat] ...'
     Otherwise Call ExitError 2, 'Bad system type:' SystemType
 End
 
@@ -536,8 +536,8 @@ SI_CMS_ParseArgs:
             When Option = 'NODETAILS' then G._AssertionDetails = G._False
             When Option = 'SOFT' then G._SoftAsserts = G._True
             When Option = 'NOSOFT' then G._SoftAsserts = G._False
-            When Option = 'TRACE' then G._Trace = G._True
-                When Option = 'NOTRACE' then G._Trace = G._True
+            When Option = 'TRACE' then ,
+               Parse var Options G._Trace Options
             When Option = 'TYPE' then G._Verbose = G._True
             When Option = 'NOTYPE' | Option = 'QUIET' then ,
                 G._Verbose = G._False
@@ -618,7 +618,7 @@ SI_Unix_ParseArgs:
             When Arg = '--help' | Arg = '-h' then Call ShowHelp 'UNIX'
             When Arg = '--quiet' | Arg = '-q' then G._Verbose = G._False
             When Arg = '--soft' | Arg = '-s' then G._SoftAsserts = G._True
-                When Arg = '--trace' | Arg = '-t' then G._Trace = G._True
+            When Arg = '--trace' | Arg = '-t' then Parse var Arg1 G._Trace Arg1
             When Arg = '--verbose' | Arg = '-v' then G._Verbose = G._True
             When Left(Arg, 1) = '-' then ,
                 Call ExitError 10, 'Unknown option:' Arg
@@ -669,7 +669,7 @@ SI_Windows_ParseArgs:
             When Translate(Arg) = '/D' then G._AssertionDetails = G._True
             When Translate(Arg) = '/Q' then G._Verbose = G._False
             When Translate(Arg) = '/S' then G._SoftAsserts = G._True
-                When Translate(Arg) = '/T' then G._Trace = G._True
+            When Translate(Arg) = '/T' then Parse var Arg1 G._Trace Arg1
             When Translate(Arg) = '/V' then G._Verbose = G._True
             When Left(Arg, 1) = '/' then ,
                 Call ExitError 8, 'Unknown option:' Arg
@@ -1194,7 +1194,7 @@ Signal on NotReady ; $RXU._TrapNotReadyDest = '$RXU_TrapNotReady'
 Signal on NoValue ; $RXU._TrapNoValueDest = '$RXU_TrapNoValue'
 Signal on Syntax; $RXU._TrapSyntaxDest = '$RXU_TrapSyntax'
 If $RXU._HasSetup then Call TestSetup
-If $RXU._Trace then Trace I
+If $RXU._Trace <> '' then Trace value $RXU._Trace
 Interpret 'Call' $RXU._Testname
 
 $RXU_TestComplete:

@@ -1,5 +1,6 @@
 REXXUNIT Change LOG
 ===================
+      - Change TRACE (implied "I") option to TRACE <type>.
       - Patch around bREXX "EXPOSE (varlist)" bug in AssertStem...().
 
 1.1.0 - 2025-11-29

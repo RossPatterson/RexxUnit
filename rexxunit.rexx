@@ -44,7 +44,7 @@ End
 If Not(G._Verbose) then Call LineOut , ''
 Call DeleteFile G._TempFile
 Call Report
-Exit
+Exit G._Count.FAIL + G._Count.ERROR + G._Count.SIGNAL + G._Count.XFAIL
 
 /* Signal traps are at the bottom, since they have to be shared with the */
 /* $RXU code. */

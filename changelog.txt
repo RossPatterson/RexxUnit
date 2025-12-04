@@ -1,10 +1,15 @@
 REXXUNIT Change LOG
 ===================
-1.1.0 - Fix Fail() output.
+      - Patch around bREXX "EXPOSE (varlist)" bug in AssertStem...().
+
+1.1.0 - 2025-11-29
+      - Fix Fail() output.
       - More direct SystemInterface() path.
       - Add TRACE option.
       - Update examples.
-1.0.0 - Make AssertStem...() show the item number.
+
+1.0.0 - 2025-07-12
+      - Make AssertStem...() show the item number.
       - Add a SYNCOUTPUT service, so CMS will flush console output at end of test.
       - All $RXU variables should be $RXU.whatever.
       - Explain Not()

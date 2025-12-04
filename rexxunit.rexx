@@ -884,9 +884,9 @@ Return
 /*---------------------------------------------------------------------------*/
 AssertStemEqual:
 
-$RXU._StemNames = Arg(1) Arg(2)
-Line = SigL /* Patch for Regina bug #610 */
-Call $RXU_ASEI_Inner Arg(1), Arg(2), 'EQUAL', Arg(3)
+$RXU.__Line = SigL /* Patch for Regina bug #610 */
+$RXU.__How = 'EQUAL'
+Signal $RXU_ASEI_Inner
 
 Return
 
@@ -900,41 +900,40 @@ Return
 /*---------------------------------------------------------------------------*/
 AssertStemIdentical:
 
-$RXU._StemNames = Arg(1) Arg(2)
-Line = SigL /* Patch for Regina bug #610 */
-Call $RXU_ASEI_Inner Arg(1), Arg(2), 'IDENTICAL', Arg(3)
+$RXU.__Line = SigL /* Patch for Regina bug #610 */
+$RXU.__How = 'IDENTICAL'
+Signal $RXU_ASEI_Inner
+
+$RXU_ASEI_Inner:
+
+Parse arg  $RXU.__ExpectedStem, $RXU.__ActualStem, $RXU.__Message
+
+$RXU.__Expected0 = Value($RXU.__ExpectedStem || '0')
+$RXU.__Actual0 = Value($RXU.__ActualStem || '0')
+Select
+   When DataType($RXU.__Expected0, 'W') & DataType($RXU.__Actual0, 'W') then ,
+      $RXU.__MaxCount = Max($RXU.__Expected0, $RXU.__Actual0)
+   When DataType($RXU.__Expected0, 'W') then $RXU.__MaxCount = $RXU.__Expected0
+   Otherwise $RXU.__MaxCount = $RXU.__Actual0
+End
+$RXU.__AllOK = 1
+$RXU.__Details = ''
+Do I = 0 to $RXU.__MaxCount
+   $RXU.__Expected = Value($RXU.__ExpectedStem || I)
+   $RXU.__Actual = Value($RXU.__ActualStem || I)
+   If $RXU.__How = 'EQUAL' then $RXU.__OK = $RXU.__Expected = $RXU.__Actual
+   Else $RXU.__OK = $RXU.__Expected == $RXU.__Actual
+   $RXU.__AllOK = $RXU.__AllOK & $RXU.__OK
+   If $RXU_Not($RXU.__OK) | $RXU._AssertionDetails then ,
+      $RXU.__Details = $RXU.__Details || '15'x || ,
+         RXU$_AssertionDetails('Expected' I, $RXU.__Expected, 'Actual' I, ,
+            $RXU.__Actual, $RXU.__Line)
+End
+If $RXU._AssertionDetails then Say $RXU.__Details
+If $RXU.__AllOK then Return
+Call $RXU_AssertFailed $RXU.__Message, $RXU.__Details
 
 Return
-
-$RXU_ASEI_Inner: Procedure expose $RXU. Line ($RXU._StemNames)
-Parse arg  ExpectedStem, ActualStem, How, Message
-
-Expected0 = Value(ExpectedStem || '0')
-Actual0 = Value(ActualStem || '0')
-Select
-   When DataType(Expected0, 'W') & DataType(Actual0, 'W') then ,
-      MaxCount = Max(Expected0, Actual0)
-   When DataType(Expected0, 'W') then MaxCount = Expected0
-   Otherwise MaxCount = Actual0
-End
-AllOK = 1
-Details = ''
-Do I = 0 to MaxCount
-   Expected = Value(ExpectedStem || I)
-   Actual = Value(ActualStem || I)
-   If How = 'EQUAL' then OK = Expected = Actual
-   Else OK = Expected == Actual
-   AllOK = AllOK & OK
-   If $RXU_Not(OK) | $RXU._AssertionDetails then ,
-      Details = Details || '15'x || ,
-         RXU$_AssertionDetails('Expected' I, Expected, 'Actual' I, ,
-            Actual, Line)
-End
-If $RXU._AssertionDetails then Say Details
-If AllOK then Return
-Call $RXU_AssertFailed Message, Details
-
-Return /* NotReached */
 
 
 /*---------------------------------------------------------------------------*/

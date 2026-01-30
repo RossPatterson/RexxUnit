@@ -1,5 +1,6 @@
 REXXUNIT Change LOG
 ===================
+I0001 - Pattern matching doesn't work for finding tests.
       - Set exit return code to count of tests in FAIL, ERROR, SIGNAL and XFAIL.
       - Change TRACE (implied "I") option to TRACE <type>.
       - Patch around bREXX "EXPOSE (varlist)" bug in AssertStem...().

@@ -204,9 +204,11 @@ Call CacheRoutinesFromFile Filename
 FilenameUpper = Translate(Filename)
 Routines = TestCache.FilenameUpper
 RoutineList = ''
+RoutinePattern = Translate(RoutinePattern)
 Do while Not(Routines = '')
     Parse var Routines Routine Routines
-    If Match(Routine, RoutinePattern) then RoutineList = RoutineList Routine
+    If Match(Translate(Routine), RoutinePattern) then ,
+        RoutineList = RoutineList Routine
 End
 
 Return RoutineList

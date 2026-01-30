@@ -73,16 +73,16 @@ TestExpect:
 The RexxUnit command syntax is styled to the system where you are running it:
 * On CMS:
   * `REXXUNIT` _fnpat_[:_testpat]_ ... `(` [[`NO`]`DETAILS`] [`HELP`] [`QUIET`]
-    [[`NO`]`SOFT`] [[`NO`]`TYPE`] [`)`]
+    [[`NO`]`SOFT`] [TRACE opt] [[`NO`]`TYPE`] [`)`]
   * All test files have the filetype `REXXUNIT`, and are located via the normal
     CMS disk-search order.
 * On Windows:
-  * `rexxunit` [`/d`|`/D`] [`/?`|`/H`] [`/q`|`/Q`] [`/s`|`/S`] [`/t`|`/T`]
+  * `rexxunit` [`/d`|`/D`] [`/?`|`/H`] [`/q`|`/Q`] [`/s`|`/S`] [`/t`|`/T` opt]
     [`/v`|`/V`] _filepat_[:_testpat_] ...
   * All test filenames are relative to the current directory.
 * Elsewhere:
   * `rexxunit` [`-d`|`--details`] [`-h`|`--help`] [`-q`|`--quiet`]
-    [`-t`|`--trace`] [`-s`|`--soft`] [`-v`|`--verbose`]
+    [`-t`|`--trace` opt] [`-s`|`--soft`] [`-v`|`--verbose`]
     _filepat_[:_testpat_] ...
   * All test filenames are relative to the current directory.
 ## Examples

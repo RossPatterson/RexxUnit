@@ -442,7 +442,7 @@ If Action = 'SETUP' then Do
     G._SystemInterface._Unix._Setup    = 'SI_Unix_Setup'
 End
 Target = Value('G._SystemInterface._' || G._SystemInterface || '._' || Action)
-If Target <> '' then Signal Value Translate(Target)
+If Not(Target = '') then Signal Value Translate(Target)
 Call ExitError 3, 'Invalid system interface action:' Action
 
 /*---------------------------------------------------------------------------*/
@@ -1196,7 +1196,7 @@ Signal on NotReady ; $RXU._TrapNotReadyDest = '$RXU_TrapNotReady'
 Signal on NoValue ; $RXU._TrapNoValueDest = '$RXU_TrapNoValue'
 Signal on Syntax; $RXU._TrapSyntaxDest = '$RXU_TrapSyntax'
 If $RXU._HasSetup then Call TestSetup
-If $RXU._Trace <> '' then Trace value $RXU._Trace
+If RXU_Not($RXU._Trace = '') then Trace value $RXU._Trace
 Interpret 'Call' $RXU._Testname
 
 $RXU_TestComplete:

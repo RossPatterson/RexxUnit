@@ -1,4 +1,4 @@
-/* RexxUnit 1.1.0 */
+/* RexxUnit 1.1.1 */
 
 /*---------------------------------------------------------------------------*/
 /* This is free and unencumbered software released into the public domain.   */
@@ -971,7 +971,7 @@ Parse arg $RXU._ExpectWhat, $RXU._ExpectHow, $RXU._ExpectMsg
 
 $RXU._ExpectWhat = Translate($RXU._ExpectWhat)
 If WordPos($RXU._ExpectWhat, ,
-        'ERROR FAILURE HALT NOTREADY NOVALUE SYNTAX') = 0 then Do
+        'ERROR FAILURE HALT NORMAL NOTREADY NOVALUE SYNTAX') = 0 then Do
     $RXU._TestStatus = 'ERROR Invalid parameter:' $RXU._ExpectWhat
     Signal $RXU_TestComplete
 End
@@ -1178,13 +1178,14 @@ Return Strip(Code)
 /* $RXU_Start                                                                */
 /*                                                                           */
 /* Run the test.                                                             */
-/*---------------------------------------------------------------------------*/
+/*--------------                -------------------------------------------------------------*/
 $RXU_Start:
 
 Drop $RXU.
 $RXU. = ''
-$RXU._ExpectOccurred = 0
 $RXU._ExpectFailure = 0
+$RXU._ExpectOccurred = 0
+$RXU._ExpectWhat = 'NORMAL'
 $RXU._TestStatus = 'PASS'
 
 Parse arg $RXU._Testname $RXU._HasSetup $RXU._HasTeardown $RXU._OS ,
@@ -1196,7 +1197,7 @@ Signal on NotReady ; $RXU._TrapNotReadyDest = '$RXU_TrapNotReady'
 Signal on NoValue ; $RXU._TrapNoValueDest = '$RXU_TrapNoValue'
 Signal on Syntax; $RXU._TrapSyntaxDest = '$RXU_TrapSyntax'
 If $RXU._HasSetup then Call TestSetup
-If RXU_Not($RXU._Trace = '') then Trace value $RXU._Trace
+If $RXU_Not($RXU._Trace = '') then Trace value $RXU._Trace
 Interpret 'Call' $RXU._Testname
 
 $RXU_TestComplete:
@@ -1204,7 +1205,7 @@ If $RXU._HasTeardown then Call TestTeardown
 
 If $RXU._ExpectFailure & $RXU._TestStatus = 'PASS' then ,
     Exit 'XFAIL' $RXU._ExpectFailureMessage
-If $RXU._ExpectWhat = '' then Exit $RXU._TestStatus
+If $RXU._ExpectWhat = 'NORMAL' then Exit $RXU._TestStatus
 If $RXU._ExpectOccurred then Exit $RXU._TestStatus
 If $RXU_Not($RXU._ExpectMsg = '') then Exit 'FAIL' $RXU._ExpectMsg
 Exit 'FAIL Expected' $RXU._ExpectWhat $RXU._ExpectHow 'not SIGNALed'

@@ -25,9 +25,35 @@ After building this, I found a similar project called
 [Dave Nicolette](https://neopragma.com).  Dave and I went in similar but
 different directions, and I'd encourage you to take a look at t.rexx.  RexxUnit
 is modeled after the [xUnit](https://en.wikipedia.org/wiki/XUnit) family of
-testing frameworks, with addition influence from the
+testing frameworks, with additional influence from the
 [pytest](https://docs.pytest.org/en/stable/) framework for testing Python
 programs.
+
+## License
+This is free and unencumbered software released into the public domain,
+
+Anyone is free to copy, modify, publish, use, compile, sell, or
+distribute this software, either in source code form or as a compiled
+binary, for any purpose, commercial or non-commercial, and by any
+means.
+
+In jurisdictions that recognize copyright laws, the author or authors
+of this software dedicate any and all copyright interest in the
+software to the public domain. We make this dedication for the benefit
+of the public at large and to the detriment of our heirs and
+successors. We intend this dedication to be an overt act of
+relinquishment in perpetuity of all present and future rights to this
+software under copyright law.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+For more information, please refer to <https://unlicense.org>
 
 ## Test structure
 
@@ -204,11 +230,12 @@ The assertions you can use are:
 Additonal functions supplied by RexxUnit:
 
 * `Expect(condition, [subcondition], [message])` - Expect the named condition
-  to occur before the test returns.  Condition must be one of 'ERROR',
-  'FAILURE', 'HALT', 'NOTREADY', 'NOVALUE', or 'SYNTAX', case independent. In
-  the case of 'ERROR', 'FAILURE', and 'SYNTAX', there may be an expected
-  subcondition RC value.  If the condition does not occur, fail the test and
-  optionally display the message.
+  to be `SIGNAL`ed before the test returns.  Condition must be one of `ERROR`,
+  `FAILURE`, `HALT`, `NOTREADY`, `NOVALUE`, or `SYNTAX`, case independent. In
+  the case of `ERROR`, `FAILURE`, and `SYNTAX`, there may be an expected
+  subcondition RC value.  If the condition is not `SIGNAL`ed, fail the test and
+  optionally display the message.  The condition can also be `NORMAL`, in
+  which case the behavior is reset to expecting no condition to `SIGNAL`ed.
 * `Fail([message])` - Fail the test and optionally display the message.
 * `NoError(command)` - Execute a command with SIGNAL OFF ERROR and return its
   return code.  This is intended for test-support commands that that use the
@@ -235,13 +262,13 @@ RexxUnit has been tested on:
 
 * CMS Rexx on VM/SP Release 5
 * CMS bREXX 1.0.1 on VM/370 CE 1.1.2
-* CMS bREXX 1.1.0 on VM/370 CE 1.1.2
-* CMS bREXX 1.1.1 on VM/370 CE 1.1.2
+* CMS bREXX 1.1.* on VM/370 CE 1.1.2
+* CMS bREXX 1.2.0 on VM/370 CE 1.1.2
 * Regina 3.6.5 on Ubuntu x86_64 Linux 20.04
-* Regina 3.9.3 on Windows 11 Home 24H2
+* Regina 3.9.3 and later on Windows 10 and 11 Home 24H2
 
-Other implementations are welcome!  If you find something that doesn't work as
-expected, open an
+Support for other implementations are welcome!  If you find something that
+doesn't work as expected, open an
 [issue on GitHub](https://github.com/RossPatterson/RexxUnit/issues).  Please
 include as clear a description of the error as possible, and if you can, a
 `TRACE I` that points to it.
@@ -266,7 +293,7 @@ If $RXU._RexxLevel > 3.40 then Interpret "Signal on Failure"
 ```
 
 Ah, but it's worse than that!  RexxUnit really needs multiple trap handlers for
-each condition.  Rexx, of couse, has `SIGNAL ON condition NAME handler`.
+each condition.  Rexx, of course, has `SIGNAL ON condition NAME handler`.
 But that wasn't introduced until Rexx level 3.46, so some implementations don't
 have it.  Thus, what RexxUnit _really_ does for `SIGNAL ON FAILURE` is this:
 
@@ -288,4 +315,10 @@ comparisons in positive terms, and passes the result through a `Not()`
 function, which inverts the condition (_e.g._, `Do while Not(TestNames = '')`
 instead of `Do while TestNames <> ''`).
 
-Whew!
+Where necessary, RexxUnit patches around bugs in the supported Rexx
+implementations (after reporting the bug, of course).  For example, Regina
+before 3.96 and bREXX before 1.1.0 both incorrectly handled the `SIGL` special
+variable, so there is code to cope with those bugs, which is marked as such in
+the comments.  Both bugs were reported and subsequently repaired.
+
+_Whew!_

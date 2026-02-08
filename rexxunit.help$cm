@@ -1,0 +1,43 @@
+REXXUNIT - a unit-testing framework for Rexx programs
+
++-----------------------------------------------------------------------------+
+|                                                                             |
+|                       ,--:--*---------,                                     |
+| >>--REXXUNIT--fn_pat--.--:--test_pat--.--.--------------------------.--><   |
+|                                          '--(--| Options |--.-----.-'       |
+|                                                             '--)--'         |
+| Options:                                                                    |
+|    ,--NODETAILS--,              ,--QUIET---,  ,--NOSOFT--,  ,--TRACE-O---,  |
+| |--+-------------+--.--------.--+----------+--+----------+--+------------+->|
+|    '--DETAILS----'  '--HELP--'  +--NOTYPE--'  '--SOFT----'  '--TRACE-opt-'  |
+|                                 '--TYPE----'                                |
+|                                                                             |
++-----------------------------------------------------------------------------+
+
+RexxUnit is a simple framework for testing Rexx programs.  It is modeled after
+the "xUnit" family of testing frameworks, with additional influence from the
+"pytest framework for testing Python programs.
+
+See REXXUNIT MEMO for the full details, including the license under which it
+is available (the "Unlicense").
+
+Examples:
+
+EXAMPLE1 REXXUNIT:
+
+    TestDefaultNumericDigits:
+        Call AssertEqual 9, Digits(), 'Default for NUMERIC DIGITS'
+        Return
+
+    TestSkipper:
+        Call Skip 'for no good reason'
+        Return
+
+    TestDefaultNumericFuzz: Call AssertEqual 0, Fuzz(); Return
+    TestFail:
+        Call Fail 'Because that''s how I roll'
+    TestExpect:
+        Call Expect 'ERROR', 1
+        'asdfqwer'
+        Return
+

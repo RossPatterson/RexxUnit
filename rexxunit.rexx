@@ -525,8 +525,8 @@ SI_CMS_ParseArgs:
     Do while Not(Operands = '')
         Parse var Operands Testname Operands
         Parse var Testname Fn ':' Routine
-        G._TestNamePatterns = G._TestNamePatterns Fn || ,
-            '.rexxunit:' || Routine
+        If Pos('.', Fn) = 0 then Fn = Fn || '.rexxunit'
+        G._TestNamePatterns = G._TestNamePatterns Fn || ':' || Routine
     End
     If G._TestNamePatterns = '' then G._TestNamePatterns = '*.rexxunit'
     Do while Not(Options = '')

@@ -1,10 +1,13 @@
 REXXUNIT Change LOG
 ===================
+      - Error in CMS not accepting filetype.
+
 1.1.1 - 2026-02-08
       - Add packaging for CMS and the ASCII world.
       - Add CMS help file.
       - Add Expect('NORMAL')
       - Fix a couple of not-equals uses.
+
 I0001 - Pattern matching doesn't work for finding tests.
       - Set exit return code to count of tests in FAIL, ERROR, SIGNAL and XFAIL.
       - Change TRACE (implied "I") option to TRACE <type>.

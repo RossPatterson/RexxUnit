@@ -1,4 +1,4 @@
-/* RexxUnit 1.1.1 */
+/* RexxUnit 1.1.1+ */
 
 /*---------------------------------------------------------------------------*/
 /* This is free and unencumbered software released into the public domain.   */
@@ -1230,7 +1230,7 @@ $RXU._ExpectOccurred = ($RXU._ExpectWhat == ConditionName)
 if $RXU_Not($RXU._ExpectHow = '') then ,
     $RXU._ExpectOccurred = $RXU._ExpectOccurred & ($RXU._ExpectHow == Details)
 If $RXU._ExpectOccurred then $RXU._TestStatus = 'PASS'
-Else $RXU._TestStatus = 'SIGNAL' ConditionName Details
+Else $RXU._TestStatus = 'SIGNAL' ConditionName Details 'in line' Line
 
 Signal $RXU_TestComplete
 

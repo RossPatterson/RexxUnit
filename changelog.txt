@@ -1,5 +1,7 @@
 REXXUNIT Change LOG
 ===================
+      - Make CMS documentation.
+      - Add line number to $RXU_TrapSprung failure status.
       - Error in CMS not accepting filetype.
 
 1.1.1 - 2026-02-08

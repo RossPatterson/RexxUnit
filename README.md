@@ -198,7 +198,7 @@ The assertions you can use are:
   the optional assertion message.  Stems must be numeric-indexed with a count
   in `stem.0`, and are compared in order, starting at 0.
 * `AssertTrue(actual, [message])` - Return if the actual value is true
-  (_i.e.), 1), otherwise fail the test and optionally display the message.
+  (_i.e._), 1), otherwise fail the test and optionally display the message.
 
 ## Additonal functions
 
@@ -219,7 +219,7 @@ Additonal functions supplied by RexxUnit:
 * `RexxOS()` - Return the type of system the test is running on.  Values are
   `CMS`, `Linux`, and `Windows` (and perhaps more in the future).
 * `RexxLevel()` - Return the version of the Rexx language supported by this
-  implementation.
+  Rexx implementation.
 * `Skip([message])` - Skip the test and optionally display the message.
 * `SkipIf(condition, [message])` - Skip the test if the condition is true
   (_i.e._, 1) and optionally display the message.
@@ -255,16 +255,16 @@ For more information, please refer to <https://unlicense.org>
 ## Compatibilty
 
 RexxUnit attempts to support any Rexx implementation that is at least Rexx
-level 3.40 - the version described in Cowlishaw's _The Rexx Language, 2nd
-edition_ - on any platform.  In practice, it has needed to "patch around"
+level 3.40 - the version described in Cowlishaw's "_The Rexx Language, 2nd
+edition_" - on any platform.  In practice, it has needed to "patch around"
 implementation variations to be able to do so.
 
 RexxUnit has been tested on:
 
-* CMS Rexx on VM/SP Release 5
-* CMS bREXX 1.0.1 on VM/370 CE 1.1.2
-* CMS bREXX 1.1.* on VM/370 CE 1.1.2
-* CMS bREXX 1.2.0 on VM/370 CE 1.1.2
+* IBM Rexx on VM/SP Release 5 CMS
+* REXX 1.0.1 on VM/370 CE 1.1.2 CMS
+* bREXX 1.1.* on VM/370 CE 1.1.2 CMS
+* bREXX 1.2.0 on VM/370 CE 1.1.2 CMS
 * Regina 3.6.5 on Ubuntu x86_64 Linux 20.04
 * Regina 3.9.3 and later on Windows 10 and 11 Home 24H2
 
@@ -275,7 +275,7 @@ include as clear a description of the error as possible, and if you can, a
 `TRACE I` that points to it.
 
 The Rexx code in RexxUnit is somewhat contorted, to ensure as much compatibilty
-as possible.  For example, before VM/SP Release 6, the CMS Rexx implementation
+as possible.  For example, before VM/SP Release 6, the IBM CMS Rexx implementation
 didn't support the `FAILURE` condition.  So RexxUnit checks if the interpeter
 is new enough, and doesn't do `SIGNAL ON FAILURE` if it isn't:
 

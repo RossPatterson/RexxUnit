@@ -35,6 +35,10 @@ Signal on Syntax
 Call Setup
 Call ParseArgs Argstring
 TestNames = CollectTests(G._TestNamePatterns)
+If TestNames = '' then Do
+   Say 'No tests found.'
+   Exit 666
+End
 Call Time 'R'    /* Start the elapsed time clock. */
 Say G._Separator
 Do while Not(TestNames = '')
@@ -84,7 +88,7 @@ Do I = 1 to SI_Results.0
 End
 TestCache._Files = TestCache._Files FilenameUpper
 TestCache.FilenameUpper = TestRoutines
-If G._Verbose then Say Filename':' Words(TestCache.FilenameUpper) 'tests'
+If G._Verbose then Say Filename':' Words(TestCache.FilenameUpper) 'tests.'
 Return
 
 
@@ -128,7 +132,7 @@ Do while Not(TestNamePatterns = '')
             I = WordPos(Translate(TestRoutinePattern), ,
                 Translate(TestCache.TestFilePatternUpper))
             If I = 0 then ,
-                Say 'Test' TestNamePattern 'not found, ignored'
+                Say 'Test' TestNamePattern 'not found, ignored.'
             Else Do
                 TestName = TestFilePattern || ':' || ,
                     Word(TestCache.TestFilePatternUpper, I)

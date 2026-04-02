@@ -1,19 +1,23 @@
 /* Package REXXUNIT for distribution */
 /* Requires pandoc from https://pandoc.org/ */
-Parse upper source System .
-If System = 'WIN64' then 'DEL rexxunit.vmarc rexxunit.zip 2>NUL:'
-Else 'rm rexxunit.vmarc rexxunit.zip 2>/dev/null'
+
+'DEL rexxunit.vmarc rexxunit.zip 2>NUL:'
+'RMDIR /q /s fixdoc\.venv 2>NUL:'
 
 Signal on Error
+
 Say 'Building documentation for CMS:'
-'.venv\Scripts\Activate &' ,
-	'pandoc --from gfm-smart --to plain --filter fixdoc.py --columns 79 < README.md > rexxunit.memo &' ,
-	'.venv\Scripts\Deactivate'
+Call CD 'fixdoc'
+'py -m venv .venv'
+'.venv\Scripts\activate.bat & pip install -r requirements.txt'
+'.venv\Scripts\activate.bat & pandoc --from gfm-smart --to plain --filter .\fixdoc.py --columns 79 < ..\README.md > ..\rexxunit.memo'
+Call CD '..'
+'RMDIR /q /s fixdoc\.venv 2>NUL:'
+
 Say 'Building rexxunit.vmarc for CMS:'
 'vma -at rexxunit.vmarc rexxunit.rexx,rexxunit.exec rexxunit.memo rexxunit.help$cm'
 
 Say 'Building rexxunit.zip for the ASCII world:'
 'zip rexxunit.zip rexxunit.rexx readme.md'
 
-If System = 'WIN64' then 'DEL rexxunit.memo 2>NUL:'
-Else 'rm rexxunit.memo 2>/dev/null'
+'DEL rexxunit.memo 2>NUL:'

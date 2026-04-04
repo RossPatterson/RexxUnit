@@ -1,4 +1,4 @@
-/* RexxUnit 1.1.1+ */
+/* RexxUnit 1.1.2 */
 
 /*---------------------------------------------------------------------------*/
 /* This is free and unencumbered software released into the public domain.   */

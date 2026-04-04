@@ -1,5 +1,8 @@
 REXXUNIT Change LOG
 ===================
+1.1.2 - 2026-04-04
+      - Make fixdoc reusable for other packages.
+      - It should be an error to find no tests.
       - Make CMS documentation.
       - Add line number to $RXU_TrapSprung failure status.
       - Error in CMS not accepting filetype.
